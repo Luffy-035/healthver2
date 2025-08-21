@@ -79,8 +79,8 @@
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
+  --background: #000000; /* AMOLED Black */
+  --foreground: #FFFFFF; /* White text for contrast */
   --card: oklch(0.21 0.006 285.885);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
@@ -119,4 +119,54 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  a {
+    color: var(--accent);
+  }
+
+  button {
+    background-color: var(--accent);
+    color: var(--accent-foreground);
+  }
+}
+/* ===== Custom Scrollbar ===== */
+
+/* For WebKit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the entire scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b; /* slate-800 - The background of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569; /* slate-600 - The color of the draggable scroll handle */
+  border-radius: 10px; /* Rounded corners on the scroll handle */
+  border: 2px solid #1e293b; /* Creates a padding effect around the handle */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b; /* slate-500 - The color of the handle on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b; /* thumb color track color */
+}
+
+@keyframes modal-in {
+  0% { opacity: 0; transform: scale(0.95) translateY(40px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-modal-in {
+  animation: modal-in 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s cubic-bezier(0.4,0,0.2,1);
 }

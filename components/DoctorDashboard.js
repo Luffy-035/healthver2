@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, Clock, User, DollarSign, AlertCircle, CheckCircle, XCircle, CreditCard, MessageCircle } from "lucide-react";
+import { Calendar, Clock, User, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getDoctorAppointments, updateAppointmentStatus } from "@/actions/appointmentActions";
 import ChatModal from "./ChatModal";
@@ -29,7 +29,8 @@ export default function DoctorDashboard({ doctor }) {
   const fetchAppointments = async () => {
     try {
       const data = await getDoctorAppointments();
-      setAppointments(data);
+      // Store original notes to compare onBlur
+      setAppointments(data.map(apt => ({ ...apt, originalNotes: apt.notes || '' })));
     } catch (error) {
       console.error("Error fetching appointments:", error);
     } finally {
@@ -41,7 +42,7 @@ export default function DoctorDashboard({ doctor }) {
     setUpdatingAppointment(appointmentId);
     try {
       await updateAppointmentStatus(appointmentId, status, notes);
-      await fetchAppointments(); // Refresh appointments
+      await fetchAppointments();
     } catch (error) {
       console.error("Error updating appointment:", error);
       alert("Failed to update appointment");
@@ -55,39 +56,13 @@ export default function DoctorDashboard({ doctor }) {
     setIsChatModalOpen(true);
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'pending':
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case 'approved':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'rejected':
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const getStatusMessage = (status) => {
-    switch (status) {
-      case 'pending':
-        return "Your profile is under review. You'll be notified once approved.";
-      case 'approved':
-        return "Your profile is approved! You can now manage appointments.";
-      case 'rejected':
-        return "Your application was rejected. Please contact support for more information.";
-      default:
-        return "Unknown status.";
-    }
-  };
-
   const getAppointmentStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'confirmed': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-yellow-500/10 text-yellow-400 border-yellow-400/20';
+      case 'confirmed': return 'bg-emerald-500/10 text-emerald-400 border-emerald-400/20';
+      case 'completed': return 'bg-blue-500/10 text-blue-400 border-blue-400/20';
+      case 'cancelled': return 'bg-red-500/10 text-red-400 border-red-400/20';
+      default: return 'bg-zinc-700/20 text-zinc-400 border-zinc-600/40';
     }
   };
 
@@ -96,197 +71,159 @@ export default function DoctorDashboard({ doctor }) {
     return new Date(apt.appointmentDate).toDateString() === today;
   });
 
-  const totalRevenue = appointments
-    .filter(apt => apt.status === 'completed' && apt.amount)
-    .reduce((sum, apt) => sum + apt.amount, 0);
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black p-6 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900/50 to-black"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/20 via-transparent to-transparent"></div>
+      
+      <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Doctor Dashboard</h1>
-          <p className="text-gray-600 mt-2">Welcome back, Dr. {doctor.name}</p>
+          <h1 className="text-3xl font-bold text-white">Doctor Dashboard</h1>
+          <p className="text-zinc-400 mt-2">Welcome back, Dr. {doctor.name}</p>
         </div>
 
-        {/* Status Card */}
-        <Card className="mb-8">
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              {getStatusIcon(doctor.status)}
-              <CardTitle className="text-xl">Profile Status</CardTitle>
-              <Badge 
-                variant={doctor.status === 'approved' ? 'default' : doctor.status === 'pending' ? 'secondary' : 'destructive'}
-              >
-                {doctor.status.charAt(0).toUpperCase() + doctor.status.slice(1)}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600">{getStatusMessage(doctor.status)}</p>
-          </CardContent>
-        </Card>
-
         {doctor.status === 'approved' ? (
-          <Tabs defaultValue="appointments" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="appointments">Appointments</TabsTrigger>
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-            </TabsList>
+          <Tabs defaultValue="appointments" className="space-y-8">
+            <div className="backdrop-blur-xl bg-zinc-900/50 border border-zinc-800 rounded-2xl p-3 shadow-2xl">
+              <TabsList className="grid w-full grid-cols-2 bg-transparent gap-3 h-auto">
+                <TabsTrigger 
+                  value="appointments" 
+                  className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:border-emerald-500 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/20 text-zinc-300 hover:text-white hover:bg-zinc-800/80 transition-all duration-300 border border-zinc-800 rounded-xl py-4 px-6 font-medium bg-zinc-900/70 text-lg"
+                >
+                  Appointments
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="profile"
+                  className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:border-emerald-500 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/20 text-zinc-300 hover:text-white hover:bg-zinc-800/80 transition-all duration-300 border border-zinc-800 rounded-xl py-4 px-6 font-medium bg-zinc-900/70 text-lg"
+                >
+                  Profile
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-            <TabsContent value="appointments" className="space-y-6">
+            <TabsContent value="appointments" className="space-y-8">
               {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Today's Appointments</CardTitle>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-white flex items-center space-x-3">
+                      <Calendar className="h-6 w-6 text-emerald-400" />
+                      <span>Today's Appointments</span>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-blue-600">
+                    <div className="text-4xl font-bold text-emerald-300">
                       {todayAppointments.length}
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-md text-zinc-400">
                       {todayAppointments.length === 0 ? "No appointments today" : "scheduled for today"}
                     </p>
                   </CardContent>
                 </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Total Appointments</CardTitle>
+                <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-white flex items-center space-x-3">
+                      <User className="h-6 w-6 text-emerald-400" />
+                      <span>Total Appointments</span>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-green-600">
+                    <div className="text-4xl font-bold text-emerald-300">
                       {appointments.length}
                     </div>
-                    <p className="text-sm text-gray-500">All time</p>
+                    <p className="text-md text-zinc-400">All time</p>
                   </CardContent>
                 </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Pending Requests</CardTitle>
+                <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-white flex items-center space-x-3">
+                      <Clock className="h-6 w-6 text-emerald-400" />
+                      <span>Pending Requests</span>
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-yellow-600">
+                    <div className="text-4xl font-bold text-emerald-300">
                       {appointments.filter(apt => apt.status === 'pending').length}
                     </div>
-                    <p className="text-sm text-gray-500">Awaiting confirmation</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Total Revenue</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold text-green-600">
-                      ₹{totalRevenue}
-                    </div>
-                    <p className="text-sm text-gray-500">From completed appointments</p>
+                    <p className="text-md text-zinc-400">Awaiting confirmation</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Appointments List */}
-              <Card>
+              <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
                 <CardHeader>
-                  <CardTitle>All Appointments</CardTitle>
-                  <CardDescription>Manage your patient appointments</CardDescription>
+                  <CardTitle className="text-white">All Appointments</CardTitle>
+                  <CardDescription className="text-zinc-400">Manage your patient appointments</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {loading ? (
-                    <div className="text-center py-8">Loading appointments...</div>
+                    <div className="text-center py-12 text-zinc-400">Loading appointments...</div>
                   ) : appointments.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       {appointments.map((appointment) => (
-                        <div key={appointment._id} className="border rounded-lg p-4 space-y-4">
+                        <div key={appointment._id} className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 rounded-xl p-6 space-y-6">
                           <div className="flex items-start justify-between">
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-2">
-                                <User className="h-4 w-4 text-gray-500" />
-                                <span className="font-medium">{appointment.patient.name}</span>
-                                <Badge className={getAppointmentStatusColor(appointment.status)}>
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                <User className="h-5 w-5 text-zinc-400" />
+                                <span className="font-medium text-white">{appointment.patient.name}</span>
+                                <Badge className={`${getAppointmentStatusColor(appointment.status)} backdrop-blur-sm border`}>
                                   {appointment.status}
                                 </Badge>
                               </div>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                              <div className="flex items-center space-x-4 text-md text-zinc-400">
                                 <div className="flex items-center">
-                                  <Calendar className="h-4 w-4 mr-1" />
-                                  <span>
-                                    {new Date(appointment.appointmentDate).toLocaleDateString()}
-                                  </span>
+                                  <Calendar className="h-5 w-5 mr-2 text-emerald-400" />
+                                  <span>{new Date(appointment.appointmentDate).toLocaleDateString()}</span>
                                 </div>
                                 <div className="flex items-center">
-                                  <Clock className="h-4 w-4 mr-1" />
-                                  <span>
-                                    {new Date(appointment.appointmentDate).toLocaleTimeString('en-US', {
-                                      hour: '2-digit',
-                                      minute: '2-digit'
-                                    })}
-                                  </span>
+                                  <Clock className="h-5 w-5 mr-2 text-emerald-400" />
+                                  <span>{new Date(appointment.appointmentDate).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
-                                
-                                {/* Payment Status */}
-                                {appointment.amount && (
-                                  <div className="flex items-center text-green-600">
-                                    <DollarSign className="h-4 w-4 mr-1" />
-                                    <span>₹{appointment.amount}</span>
-                                  </div>
-                                )}
                               </div>
-                              
                               {appointment.reason && (
-                                <p className="text-sm">
+                                <p className="text-md text-zinc-300">
                                   <span className="font-medium">Reason: </span>
                                   {appointment.reason}
                                 </p>
                               )}
                             </div>
-                            
-                            {/* Payment Badge */}
-                            {appointment.paymentId && (
-                              <Badge variant="outline" className="text-green-600 border-green-600">
-                                Paid
-                              </Badge>
-                            )}
                           </div>
-
-                          <div className="flex items-center space-x-4">
+                          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                             <Select 
                               value={appointment.status}
-                              onValueChange={(value) => handleStatusUpdate(appointment._id, value)}
+                              onValueChange={(value) => handleStatusUpdate(appointment._id, value, appointment.notes)}
                               disabled={updatingAppointment === appointment._id}
                             >
-                              <SelectTrigger className="w-40">
-                                <SelectValue />
+                              <SelectTrigger className="w-full md:w-48 bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+                                <SelectValue className="text-white" />
                               </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="pending">Pending</SelectItem>
-                                <SelectItem value="confirmed">Confirmed</SelectItem>
-                                <SelectItem value="completed">Completed</SelectItem>
-                                <SelectItem value="cancelled">Cancelled</SelectItem>
+                              <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
+                                <SelectItem value="pending" className="hover:bg-zinc-800 focus:bg-zinc-800">Pending</SelectItem>
+                                <SelectItem value="confirmed" className="hover:bg-zinc-800 focus:bg-zinc-800">Confirmed</SelectItem>
+                                <SelectItem value="completed" className="hover:bg-zinc-800 focus:bg-zinc-800">Completed</SelectItem>
+                                <SelectItem value="cancelled" className="hover:bg-zinc-800 focus:bg-zinc-800">Cancelled</SelectItem>
                               </SelectContent>
                             </Select>
-
-                            {/* Chat Button - Only show for confirmed appointments */}
                             {appointment.status === 'confirmed' && (
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleOpenChat(appointment)}
+                                className="bg-zinc-800 hover:bg-zinc-700 text-white border-zinc-700 hover:border-emerald-500 h-10 px-4"
                               >
-                                <MessageCircle className="h-4 w-4 mr-2" />
+                                <MessageCircle className="h-5 w-5 mr-2" />
                                 Chat
                               </Button>
                             )}
-
-                            <div className="flex-1">
+                            <div className="flex-1 w-full">
                               <Textarea
                                 placeholder="Add notes for this appointment..."
                                 value={appointment.notes || ''}
                                 onChange={(e) => {
-                                  // Update local state
                                   setAppointments(prev =>
                                     prev.map(apt =>
                                       apt._id === appointment._id
@@ -296,13 +233,12 @@ export default function DoctorDashboard({ doctor }) {
                                   );
                                 }}
                                 onBlur={(e) => {
-                                  // Save notes when user clicks away
-                                  if (e.target.value !== (appointment.originalNotes || '')) {
+                                  if (e.target.value !== appointment.originalNotes) {
                                     handleStatusUpdate(appointment._id, appointment.status, e.target.value);
                                   }
                                 }}
-                                rows={2}
-                                className="text-sm"
+                                rows={3}
+                                className="bg-zinc-800/80 border-zinc-700 text-white focus:border-emerald-500/50 focus:ring-emerald-500/20 placeholder-zinc-500 text-md h-24"
                               />
                             </div>
                           </div>
@@ -311,69 +247,69 @@ export default function DoctorDashboard({ doctor }) {
                     </div>
                   ) : (
                     <div className="text-center py-12">
-                      <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-gray-500 mb-2">No Appointments Yet</h3>
-                      <p className="text-gray-400">Patients will be able to book appointments with you once your profile is approved.</p>
+                      <Calendar className="h-16 w-16 text-zinc-600 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-zinc-400 mb-2">No Appointments Yet</h3>
+                      <p className="text-zinc-500">Patients will be able to book appointments with you once your profile is approved.</p>
                     </div>
                   )}
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="profile" className="space-y-6">
-              {/* Profile Info */}
-              <Card>
+            <TabsContent value="profile" className="space-y-8">
+              <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <User className="h-5 w-5" />
+                  <CardTitle className="text-white flex items-center space-x-3">
+                    <User className="h-6 w-6 text-emerald-400" />
                     <span>Profile Information</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Specialization</label>
-                      <p className="text-lg">{doctor.specialization}</p>
+                      <label className="text-md font-medium text-zinc-400">Specialization</label>
+                      <p className="text-xl text-white mt-1">{doctor.specialization}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Category</label>
-                      <p className="text-lg">{doctor.category}</p>
+                      <label className="text-md font-medium text-zinc-400">Category</label>
+                      <p className="text-xl text-white mt-1">{doctor.category}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Experience</label>
-                      <p className="text-lg">{doctor.experience} years</p>
+                      <label className="text-md font-medium text-zinc-400">Experience</label>
+                      <p className="text-xl text-white mt-1">{doctor.experience} years</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">Consultation Fee</label>
-                      <p className="text-lg flex items-center">
-                        <DollarSign className="h-4 w-4 mr-1" />
+                      <label className="text-md font-medium text-zinc-400">Consultation Fee</label>
+                      <p className="text-xl text-white mt-1 flex items-center">
                         ₹{doctor.consultationFee}
                       </p>
                     </div>
                   </div>
-                  
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Qualifications</label>
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <label className="text-md font-medium text-zinc-400">Qualifications</label>
+                    <div className="flex flex-wrap gap-2 mt-3">
                       {doctor.qualifications?.map((qual, index) => (
-                        <Badge key={index} variant="outline">{qual}</Badge>
+                        <Badge key={index} className="bg-zinc-800 text-white border-zinc-700 text-md">
+                          {qual}
+                        </Badge>
                       ))}
                     </div>
                   </div>
-
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Availability</label>
-                    <div className="mt-2 space-y-2">
+                    <label className="text-md font-medium text-zinc-400">Availability</label>
+                    <div className="mt-3 space-y-4">
                       {doctor.availability?.map((avail, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <Calendar className="h-4 w-4 text-blue-500" />
-                          <span className="font-medium">{avail.day}:</span>
-                          <div className="flex space-x-1">
-                            {avail.slots?.map((slot, slotIndex) => (
-                              <Badge key={slotIndex} variant="secondary" className="text-xs">
-                                {slot}
-                              </Badge>
-                            ))}
+                        <div key={index} className="flex items-start space-x-4">
+                          <Calendar className="h-6 w-6 text-emerald-400 mt-1" />
+                          <div>
+                            <span className="font-medium text-white text-lg">{avail.day}:</span>
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {avail.slots?.map((slot, slotIndex) => (
+                                <Badge key={slotIndex} className="bg-zinc-800 text-white border-zinc-700 text-sm">
+                                  {slot}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -383,31 +319,26 @@ export default function DoctorDashboard({ doctor }) {
               </Card>
             </TabsContent>
           </Tabs>
-        ) : doctor.status === 'pending' ? (
-          <Card>
+        ) : (
+          <Card className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
             <CardContent className="text-center py-12">
-              <AlertCircle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Profile Under Review</h3>
-              <p className="text-gray-600 mb-6">
+              <div className="mx-auto p-4 bg-yellow-500/10 rounded-full w-fit border border-yellow-400/20 mb-4">
+                <AlertCircle className="h-12 w-12 text-yellow-400" />
+              </div>
+              <h3 className="text-2xl font-semibold text-white mb-3">Profile Under Review</h3>
+              <p className="text-zinc-300 text-lg mb-6">
                 Thank you for submitting your profile. Our team is reviewing your application and will notify you once it's approved.
               </p>
-              <Button variant="outline">Contact Support</Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="text-center py-12">
-              <XCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Application Rejected</h3>
-              <p className="text-gray-600 mb-6">
-                Unfortunately, your application was not approved. Please contact our support team for more information.
-              </p>
-              <Button variant="outline">Contact Support</Button>
+              <Button 
+                variant="outline"
+                className="bg-zinc-800 hover:bg-zinc-700 text-white border-zinc-700 hover:border-emerald-500 px-8 py-3 text-md"
+              >
+                Contact Support
+              </Button>
             </CardContent>
           </Card>
         )}
 
-        {/* Chat Modal */}
         {selectedAppointmentForChat && (
           <ChatModal
             appointment={selectedAppointmentForChat}

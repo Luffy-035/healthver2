@@ -8,6 +8,7 @@ import Doctor from "@/models/Doctor";
 
 export async function setUserRole(role) {
   try {
+    console.log(role);
     const { userId } = await auth(); 
     
     if (!userId) {
