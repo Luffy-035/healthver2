@@ -119,41 +119,45 @@ export default function DoctorOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-            <Stethoscope className="h-8 w-8 text-green-600" />
+    <div className="min-h-screen bg-black py-12 px-4 sm:px-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <div className="mx-auto w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-700">
+            <Stethoscope className="h-10 w-10 text-emerald-400" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Complete Your Profile</h1>
-          <p className="text-gray-600 mt-2">Help patients find you by completing your medical profile</p>
+          <h1 className="text-4xl font-bold text-white mb-3">Complete Your Profile</h1>
+          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
+            Help patients find you by completing your medical profile information
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-10">
           {/* Personal Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
-                <span>Personal Information</span>
+          <Card className="bg-zinc-900 border-zinc-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-3 text-white">
+                <User className="h-6 w-6 text-emerald-400" />
+                <span className="text-xl">Personal Information</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Full Name *</Label>
+            <CardContent className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="name" className="text-zinc-300 text-base">Full Name *</Label>
                   <Input
                     id="name"
+                    className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 h-12 text-base"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="phone" className="text-zinc-300 text-base">Phone Number *</Label>
                   <Input
                     id="phone"
                     type="tel"
+                    className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 h-12 text-base"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     required
@@ -164,34 +168,35 @@ export default function DoctorOnboarding() {
           </Card>
 
           {/* Professional Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <GraduationCap className="h-5 w-5" />
-                <span>Professional Information</span>
+          <Card className="bg-zinc-900 border-zinc-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-3 text-white">
+                <GraduationCap className="h-6 w-6 text-emerald-400" />
+                <span className="text-xl">Professional Information</span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="specialization">Specialization *</Label>
+            <CardContent className="space-y-6 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="specialization" className="text-zinc-300 text-base">Specialization *</Label>
                   <Input
                     id="specialization"
+                    className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 h-12 text-base"
                     value={formData.specialization}
                     onChange={(e) => handleInputChange('specialization', e.target.value)}
                     placeholder="e.g. Internal Medicine"
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="category">Category *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="category" className="text-zinc-300 text-base">Category *</Label>
                   <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-zinc-900 border-zinc-700 text-white h-12 text-base">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-zinc-900 border-zinc-700 text-white">
                       {CATEGORIES.map((category) => (
-                        <SelectItem key={category} value={category.toLowerCase()}>
+                        <SelectItem key={category} value={category.toLowerCase()} className="hover:bg-zinc-800 text-base">
                           {category}
                         </SelectItem>
                       ))}
@@ -200,25 +205,27 @@ export default function DoctorOnboarding() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="experience">Years of Experience *</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="experience" className="text-zinc-300 text-base">Years of Experience *</Label>
                   <Input
                     id="experience"
                     type="number"
                     min="0"
+                    className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 h-12 text-base"
                     value={formData.experience}
                     onChange={(e) => handleInputChange('experience', e.target.value)}
                     required
                   />
                 </div>
-                <div>
-                  <Label htmlFor="consultationFee">Consultation Fee ($) *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="consultationFee" className="text-zinc-300 text-base">Consultation Fee ($) *</Label>
                   <Input
                     id="consultationFee"
                     type="number"
                     min="0"
                     step="0.01"
+                    className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 h-12 text-base"
                     value={formData.consultationFee}
                     onChange={(e) => handleInputChange('consultationFee', e.target.value)}
                     required
@@ -226,56 +233,58 @@ export default function DoctorOnboarding() {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="qualifications">Qualifications *</Label>
+              <div className="space-y-3">
+                <Label htmlFor="qualifications" className="text-zinc-300 text-base">Qualifications *</Label>
                 <Textarea
                   id="qualifications"
+                  className="bg-zinc-900 border-zinc-700 text-white focus:border-emerald-400 min-h-[120px] text-base"
                   value={formData.qualifications}
                   onChange={(e) => handleInputChange('qualifications', e.target.value)}
                   placeholder="Enter qualifications separated by commas (e.g. MBBS, MD Internal Medicine, Fellowship in Cardiology)"
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">Separate multiple qualifications with commas</p>
+                <p className="text-sm text-zinc-500 mt-2">Separate multiple qualifications with commas</p>
               </div>
             </CardContent>
           </Card>
 
           {/* Availability */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Clock className="h-5 w-5" />
-                <span>Availability</span>
+          <Card className="bg-zinc-900 border-zinc-700">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-3 text-white">
+                <Clock className="h-6 w-6 text-emerald-400" />
+                <span className="text-xl">Availability</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-zinc-400 text-base pt-1">
                 Select the days and time slots when you're available for consultations
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-8 pt-2">
               {formData.availability.map((dayAvail, dayIndex) => (
-                <div key={dayAvail.day} className="space-y-3">
-                  <div className="flex items-center space-x-2">
+                <div key={dayAvail.day} className="space-y-4">
+                  <div className="flex items-center space-x-3">
                     <Checkbox
                       id={dayAvail.day}
                       checked={dayAvail.selected}
                       onCheckedChange={() => handleDayToggle(dayIndex)}
+                      className="w-5 h-5 border-zinc-700 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                     />
-                    <Label htmlFor={dayAvail.day} className="text-lg font-medium">
+                    <Label htmlFor={dayAvail.day} className="text-lg font-medium text-white">
                       {dayAvail.day}
                     </Label>
                   </div>
                   
                   {dayAvail.selected && (
-                    <div className="ml-6 space-y-2">
-                      <p className="text-sm text-gray-600">Select available time slots:</p>
-                      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                    <div className="ml-8 space-y-4">
+                      <p className="text-base text-zinc-400">Select available time slots:</p>
+                      <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
                         {TIME_SLOTS.map((slot) => (
                           <Button
                             key={slot}
                             type="button"
                             variant={dayAvail.slots.includes(slot) ? "default" : "outline"}
                             size="sm"
-                            className="text-xs"
+                            className={`text-sm px-3 py-2 ${dayAvail.slots.includes(slot) ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white'}`}
                             onClick={() => handleSlotToggle(dayIndex, slot)}
                           >
                             {slot}
@@ -283,7 +292,7 @@ export default function DoctorOnboarding() {
                         ))}
                       </div>
                       {dayAvail.slots.length > 0 && (
-                        <p className="text-sm text-green-600">
+                        <p className="text-base text-emerald-400">
                           Selected: {dayAvail.slots.length} slots
                         </p>
                       )}
@@ -295,17 +304,17 @@ export default function DoctorOnboarding() {
           </Card>
 
           {/* Submit */}
-          <Card>
-            <CardContent className="pt-6">
+          <Card className="bg-zinc-900 border-zinc-700">
+            <CardContent className="py-8">
               <Button 
                 type="submit" 
                 size="lg" 
-                className="w-full"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg"
                 disabled={loading}
               >
                 {loading ? "Creating Profile..." : "Submit for Review"}
               </Button>
-              <p className="text-sm text-gray-500 text-center mt-4">
+              <p className="text-base text-zinc-500 text-center mt-6">
                 Your profile will be reviewed by our team and you'll be notified once approved.
               </p>
             </CardContent>
