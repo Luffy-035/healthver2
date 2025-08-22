@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import HealthQuestionnaire from "./HealthQuestionnaire";
 import { getHealthData, updateHealthScore } from "@/actions/healthActions";
+import AIHealthInsights from "./AIHealthInsights";
 
 export default function HealthScoreDashboard({ patient }) {
     const [healthData, setHealthData] = useState(null);
@@ -194,6 +195,12 @@ export default function HealthScoreDashboard({ patient }) {
                         <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Moon className="h-6 w-6 text-purple-400" /><span>Sleep & Rest</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.sleep || 0} className="flex-1 mr-4 h-3 [&>*]:bg-purple-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.sleep || 0}</span></CardContent></Card>
                         <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Smile className="h-6 w-6 text-yellow-400" /><span>Mental Health</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.mental_health || 0} className="flex-1 mr-4 h-3 [&>*]:bg-yellow-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.mental_health || 0}</span></CardContent></Card>
                     </div>
+                )}
+                {healthData?.questionnaire && (
+                    <AIHealthInsights
+                        healthData={healthData}
+                        onRefresh={() => loadHealthData()}
+                    />
                 )}
 
                 {/* AI Recommendations */}
