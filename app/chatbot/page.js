@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PDFUploaderModal from './PDFUploaderModal';
 import {
     MessageCircle,
     Send,
@@ -13,9 +14,16 @@ import {
     Stethoscope,
     Phone,
     Calendar,
-    ArrowLeft
+    ArrowLeft,
+    FileText
 } from "lucide-react";
 import BookAppointmentModal from "@/components/BookAppointmentModal";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function ChatbotPage() {
     const router = useRouter();
@@ -24,8 +32,11 @@ export default function ChatbotPage() {
     const [loading, setLoading] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [isReportsDialogOpen, setIsReportsDialogOpen] = useState(false);
     const messagesEndRef = useRef(null);
     const scrollAreaRef = useRef(null);
+    const [isUploaderOpen, setIsUploaderOpen] = useState(false);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -149,6 +160,9 @@ export default function ChatbotPage() {
                         </div>
                     </div>
                 </div>
+               <Button onClick={() => setIsUploaderOpen(true)}>Upload Reports</Button>
+<PDFUploaderModal isOpen={isUploaderOpen} onClose={() => setIsUploaderOpen(false)} />
+
             </div>
 
             {/* Enhanced Chat Container */}
@@ -359,6 +373,65 @@ export default function ChatbotPage() {
                     }}
                 />
             )}
+
+            {/* Reports Dialog */}
+            <Dialog open={isReportsDialogOpen} onOpenChange={setIsReportsDialogOpen}>
+                <DialogContent className="sm:max-w-4xl bg-gray-950 border-gray-800 text-white">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center">
+                            <FileText className="h-5 w-5 mr-2 text-emerald-400" />
+                            Your Medical Reports
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div className="p-6 bg-gray-900/50 rounded-lg border border-gray-800/60">
+                            <h3 className="font-semibold text-lg mb-4">Recent Reports</h3>
+                            <div className="space-y-3">
+                                {/* Sample report items */}
+                                <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors border border-gray-800/60">
+                                    <div>
+                                        <h4 className="font-medium">Blood Test Results</h4>
+                                        <p className="text-sm text-gray-400">Completed: 15 May 2023</p>
+                                    </div>
+                                    
+                                </div>
+                                <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors border border-gray-800/60">
+                                    <div>
+                                        <h4 className="font-medium">X-Ray Scan</h4>
+                                        <p className="text-sm text-gray-400">Completed: 10 April 2023</p>
+                                    </div>
+                                  
+                                </div>
+                                <div className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg hover:bg-gray-800/50 transition-colors border border-gray-800/60">
+                                    <div>
+                                        <h4 className="font-medium">Annual Physical Exam</h4>
+                                        <p className="text-sm text-gray-400">Completed: 2 March 2023</p>
+                                    </div>
+                                  
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex justify-end space-x-3 pt-4">
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setIsReportsDialogOpen(false)}
+                                className="border-gray-700 hover:bg-gray-800/50"
+                            >
+                                Close
+                            </Button>
+                            <Button 
+                                className="bg-emerald-500/90 hover:bg-emerald-400/90 text-white"
+                                onClick={() => {
+                                    setIsReportsDialogOpen(false);
+                                    router.push('/reports');
+                                }}
+                            >
+                                View All Reports
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

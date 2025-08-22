@@ -193,13 +193,9 @@ export default function PatientDashboard({ doctors }) {
                               <Star className="h-3 w-3 text-emerald-400" />
                             </div>
                             <span>{doctor.experience} years exp</span>
-                          </div>
-                          <div className="flex items-center space-x-2 text-zinc-400">
-                            <div className="p-1.5 bg-emerald-500/10 rounded-lg">
-                              <DollarSign className="h-3 w-3 text-emerald-400" />
-                            </div>
                             <span>₹{doctor.consultationFee}</span>
                           </div>
+                          
                         </div>
 
                         {doctor.qualifications && doctor.qualifications.length > 0 && (

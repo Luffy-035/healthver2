@@ -138,13 +138,13 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0">
-        <DialogHeader className="p-4 border-b">
-          <DialogTitle className="flex items-center space-x-2">
-            <MessageCircle className="h-5 w-5 text-blue-600" />
+      <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0 bg-zinc-900 border-zinc-700">
+        <DialogHeader className="p-4 border-b border-zinc-700">
+          <DialogTitle className="flex items-center space-x-2 text-white">
+            <MessageCircle className="h-5 w-5 text-emerald-400" />
             <span>Chat with {isDoctor ? otherUser.name : `Dr. ${otherUser.name}`}</span>
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-zinc-400">
             Appointment on {new Date(appointment.appointmentDate).toLocaleDateString()}
           </DialogDescription>
         </DialogHeader>
@@ -154,14 +154,14 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
           <ScrollArea className="flex-1 p-4">
             {loading ? (
               <div className="flex items-center justify-center h-full">
-                <div className="text-gray-500">Loading chat...</div>
+                <div className="text-zinc-400">Loading chat...</div>
               </div>
             ) : messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-center">
                 <div className="space-y-2">
-                  <MessageCircle className="h-12 w-12 text-gray-400 mx-auto" />
-                  <p className="text-gray-500">No messages yet</p>
-                  <p className="text-sm text-gray-400">Start the conversation!</p>
+                  <MessageCircle className="h-12 w-12 text-zinc-500 mx-auto" />
+                  <p className="text-zinc-400">No messages yet</p>
+                  <p className="text-sm text-zinc-500">Start the conversation!</p>
                 </div>
               </div>
             ) : (
@@ -177,8 +177,8 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                       <div
                         className={`max-w-[70%] rounded-lg px-3 py-2 ${
                           isOwnMessage
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-900'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-zinc-800 text-zinc-300'
                         }`}
                       >
                         <div className="flex items-center space-x-1 mb-1">
@@ -190,7 +190,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                           <span className="text-xs font-medium">
                             {message.senderName}
                           </span>
-                          <span className="text-xs opacity-75">
+                          <span className="text-xs text-zinc-400">
                             {formatTime(message.createdAt)}
                           </span>
                         </div>
@@ -206,18 +206,19 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
           </ScrollArea>
 
           {/* Message Input */}
-          <div className="border-t p-4">
+          <div className="border-t border-zinc-700 p-4">
             <form onSubmit={handleSendMessage} className="flex space-x-2">
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1"
+                className="flex-1 bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:border-emerald-400 focus:ring-emerald-400"
                 disabled={loading}
               />
               <Button 
                 type="submit" 
                 size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 disabled={!newMessage.trim() || loading}
               >
                 <Send className="h-4 w-4" />
