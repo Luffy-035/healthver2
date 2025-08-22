@@ -219,7 +219,7 @@ export default function DoctorOnboarding() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label htmlFor="consultationFee" className="text-zinc-300 text-base">Consultation Fee ($) *</Label>
+                  <Label htmlFor="consultationFee" className="text-zinc-300 text-base">Consultation Fee (₹) *</Label>
                   <Input
                     id="consultationFee"
                     type="number"
