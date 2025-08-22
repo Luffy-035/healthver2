@@ -21,7 +21,7 @@ export async function POST(request) {
     console.log('FormData entries:', [...formData.entries()]);
 
     // Get files from form data
-    const files = formData.getAll('files'); // Use 'files' as the key
+    const files = formData.getAll('files');
     
     if (!files || files.length === 0) {
       console.log('No files found in formData');
@@ -30,85 +30,76 @@ export async function POST(request) {
 
     console.log(`Processing ${files.length} PDF files...`);
 
-    let allParsedData = [];
-    let downloadUrls = [];
-
-    // Process each uploaded PDF file
+    // Create FormData for AI API with ALL files at once
+    const aiFormData = new FormData();
+    
     for (const file of files) {
-      try {
-        if (!file || !file.name) {
-          console.log('Invalid file:', file);
-          continue;
-        }
-
-        console.log(`Processing file: ${file.name}, size: ${file.size}`);
-        
-        // Convert file to buffer for AI API
-        const arrayBuffer = await file.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        // Create FormData for AI API
-        const aiFormData = new FormData();
-        const blob = new Blob([buffer], { type: 'application/pdf' });
-        aiFormData.append('file', blob, file.name);
-
-        console.log('Calling AI API for PDF parsing...');
-
-        // Call your AI PDF parsing service
-        const response = await fetch('http://127.0.0.1:9000/parse_report/', {
-          method: 'POST',
-          body: aiFormData,
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`AI API error for ${file.name}:`, response.status, errorText);
-          continue; // Skip this file but continue with others
-        }
-
-        const jsonResult = await response.json();
-        console.log(`Successfully parsed ${file.name}`);
-
-        // Add parsed data to our collection
-        if (jsonResult.parsed_json) {
-          allParsedData = allParsedData.concat(jsonResult.parsed_json);
-        }
-        
-        // Add download URL if provided
-        if (jsonResult.pdf_download_url) {
-          downloadUrls.push({
-            filename: file.name,
-            download_url: jsonResult.pdf_download_url
-          });
-        }
-
-      } catch (fileError) {
-        console.error(`Error processing ${file.name}:`, fileError);
-        // Continue processing other files even if one fails
+      if (!file || !file.name) {
+        console.log('Invalid file:', file);
+        continue;
       }
+
+      console.log(`Adding file to batch: ${file.name}, size: ${file.size}`);
+      
+      // Convert file to buffer for AI API
+      const arrayBuffer = await file.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const blob = new Blob([buffer], { type: 'application/pdf' });
+      
+      // Add each file to the same FormData with 'files' key
+      aiFormData.append('files', blob, file.name);
     }
 
-    // Save all parsed data to patient's lab_json field
+    console.log('Calling AI API for combined PDF parsing...');
+
+    // Send ALL files in ONE request to FastAPI
+    const response = await fetch(process.env.AI_PDF, {
+      method: 'POST',
+      body: aiFormData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`AI API error:`, response.status, errorText);
+      return NextResponse.json(
+        { error: `AI API error: ${response.status} - ${errorText}` },
+        { status: response.status }
+      );
+    }
+
+    const jsonResult = await response.json();
+    console.log(`Successfully processed ${files.length} files into combined report`);
+
+    // Save combined data to patient's lab_json field
     const labData = {
-      parsed_json: allParsedData,
-      pdf_download_urls: downloadUrls,
+      parsed_json: jsonResult.parsed_json || [],
+      pdf_download_url: jsonResult.pdf_download_url || null,
       processed_at: new Date().toISOString(),
-      total_files_processed: files.length
+      total_files_processed: jsonResult.total_files_processed || files.length,
+      total_reports_merged: jsonResult.total_reports_merged || 0,
+      unique_tests_found: jsonResult.unique_tests_found || 0
     };
 
     // Update patient record
     patient.lab_json = JSON.stringify(labData);
     await patient.save();
 
-    console.log(`Successfully processed and saved data for patient ${userId}`);
+    console.log(`Successfully processed and saved combined data for patient ${userId}`);
+    console.log(jsonResult)
 
     return NextResponse.json({
       success: true,
-      message: `Successfully processed ${files.length} PDF files`,
-      parsed_json: allParsedData,
-      pdf_download_urls: downloadUrls,
-      total_files: files.length,
-      parsed_reports: allParsedData.length
+      message: `Successfully processed ${files.length} PDF files into combined report`,
+      parsed_json: jsonResult.parsed_json,
+      pdf_download_urls: jsonResult.pdf_download_url ? [
+        {
+            filename: files.length > 1 ? 'Combined Medical Report.pdf' : files[0].name.replace('.pdf', '_processed.pdf'),
+            download_url: jsonResult.pdf_download_url
+        }
+    ] : [],
+      total_files_processed: jsonResult.total_files_processed,
+      total_reports_merged: jsonResult.total_reports_merged,
+      unique_tests_found: jsonResult.unique_tests_found
     });
 
   } catch (error) {

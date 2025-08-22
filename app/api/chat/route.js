@@ -19,7 +19,7 @@ export async function POST(request) {
       redirect: "follow"
     };
 
-    const response = await fetch("http://127.0.0.1:9001/chat/", requestOptions);
+    const response = await fetch(process.env.AI_CHAT, requestOptions);
     
     if (!response.ok) {
       const errorText = await response.text();
