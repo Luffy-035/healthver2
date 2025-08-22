@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, DollarSign, Star, Clock, User, CreditCard, MessageCircle, Activity, Heart, Brain, Shield, Eye, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import BookAppointmentModal from "./BookAppointmentModal";
 import ChatModal from "./ChatModal";
 import { getPatientAppointments } from "@/actions/appointmentActions";
@@ -82,18 +83,28 @@ export default function PatientDashboard({ doctors }) {
         <div className="mb-10">
           <div className="backdrop-blur-xl bg-zinc-900/50 border border-zinc-800/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent"></div>
-            <div className="relative flex items-center space-x-6">
-              <div className="p-4 bg-emerald-500/10 border border-emerald-400/20 rounded-2xl backdrop-blur-sm">
-                <Zap className="h-8 w-8 text-emerald-400" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center space-x-6">
+                <div className="p-4 bg-emerald-500/10 border border-emerald-400/20 rounded-2xl backdrop-blur-sm">
+                  <Zap className="h-8 w-8 text-emerald-400" />
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent">
+                    Patient Dashboard
+                  </h1>
+                  <p className="text-zinc-400 mt-2 text-lg">
+                    Manage your healthcare appointments with AI-powered insights
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-emerald-300 bg-clip-text text-transparent">
-                  Patient Dashboard
-                </h1>
-                <p className="text-zinc-400 mt-2 text-lg">
-                  Manage your healthcare appointments with AI-powered insights
-                </p>
-              </div>
+              
+              <Link
+                href="/chatbot"
+                className="inline-flex items-center justify-center px-5 py-3 text-lg font-medium text-zinc-200 bg-zinc-800/70 border border-zinc-700 rounded-xl hover:bg-zinc-800 hover:text-white hover:border-emerald-600 transition-all duration-300"
+              >
+                <MessageCircle className="h-5 w-5 mr-2 text-emerald-400" />
+                <span>AI Assistant</span>
+              </Link>
             </div>
           </div>
         </div>

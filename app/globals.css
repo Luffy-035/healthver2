@@ -150,10 +150,25 @@
   background: #64748b; /* slate-500 - The color of the handle on hover */
 }
 
-/* For Firefox */
+/* Global scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #475569 #1e293b; /* thumb color track color */
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
 }
 
 @keyframes modal-in {

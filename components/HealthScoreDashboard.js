@@ -57,30 +57,30 @@ export default function HealthScoreDashboard({ patient }) {
     };
 
     const getScoreColor = (score) => {
-        if (score >= 80) return "text-green-600";
-        if (score >= 60) return "text-yellow-600";
-        return "text-red-600";
+        if (score >= 80) return "text-emerald-400";
+        if (score >= 60) return "text-yellow-400";
+        return "text-red-400";
     };
 
     const getScoreStatus = (score) => {
-        if (score >= 80) return { text: "Excellent", color: "bg-green-100 text-green-800" };
-        if (score >= 60) return { text: "Good", color: "bg-yellow-100 text-yellow-800" };
-        if (score >= 40) return { text: "Fair", color: "bg-orange-100 text-orange-800" };
-        return { text: "Needs Improvement", color: "bg-red-100 text-red-800" };
+        if (score >= 80) return { text: "Excellent", color: "bg-emerald-900 text-emerald-300 border border-emerald-700" };
+        if (score >= 60) return { text: "Good", color: "bg-yellow-900 text-yellow-300 border border-yellow-700" };
+        if (score >= 40) return { text: "Fair", color: "bg-orange-900 text-orange-300 border border-orange-700" };
+        return { text: "Needs Improvement", color: "bg-red-900 text-red-300 border border-red-700" };
     };
 
     const getTrendIcon = (trend) => {
-        if (trend === 'improving') return <TrendingUp className="h-4 w-4 text-green-600" />;
-        if (trend === 'declining') return <TrendingDown className="h-4 w-4 text-red-600" />;
-        return <Minus className="h-4 w-4 text-gray-600" />;
+        if (trend === 'improving') return <TrendingUp className="h-5 w-5 text-emerald-400" />;
+        if (trend === 'declining') return <TrendingDown className="h-5 w-5 text-red-400" />;
+        return <Minus className="h-5 w-5 text-zinc-400" />;
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 p-6">
+            <div className="min-h-screen bg-black p-8">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex items-center justify-center h-64">
-                        <RefreshCw className="h-8 w-8 animate-spin text-blue-600" />
+                        <RefreshCw className="h-10 w-10 animate-spin text-emerald-500" />
                     </div>
                 </div>
             </div>
@@ -88,124 +88,96 @@ export default function HealthScoreDashboard({ patient }) {
     }
 
     const currentScore = healthData?.current_score || 0;
-    // ADD THESE LINES - Extract individual scores for breakdown
     const questionnaireScore = healthData?.questionnaire_score || 0;
     const aiScore = healthData?.ai_score || 0;
     const combinedScore = healthData?.combined_score || currentScore;
-
     const scoreStatus = getScoreStatus(currentScore);
     const categoryScores = healthData?.questionnaire?.categories || {};
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-6xl mx-auto space-y-6">
+        // ✅ SPACIOUS: Increased padding and vertical spacing
+        <div className="min-h-screen bg-black p-8">
+            <div className="max-w-6xl mx-auto space-y-12">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Health Score</h1>
-                        <p className="text-gray-600 mt-2">Track and improve your overall health</p>
+                        <h1 className="text-4xl font-bold text-white">Health Score</h1>
+                        <p className="text-zinc-400 mt-3 text-lg">Track and improve your overall health</p>
                     </div>
-                    <Button onClick={() => setShowQuestionnaire(true)} size="lg">
-                        <Play className="h-4 w-4 mr-2" />
+                    <Button onClick={() => setShowQuestionnaire(true)} size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white h-14 px-8 text-lg">
+                        <Play className="h-5 w-5 mr-3" />
                         {healthData?.questionnaire ? "Retake Assessment" : "Take Health Assessment"}
                     </Button>
                 </div>
 
-                {/* Main Health Score Card - FIXED DESIGN */}
-                <Card className="relative overflow-hidden">
-                    <CardHeader className="pb-4">
+                {/* Main Health Score Card */}
+                <Card className="relative overflow-hidden bg-zinc-900 border-zinc-800 p-8">
+                    <CardHeader className="pb-8">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle className="text-2xl">Your Health Score</CardTitle>
-                                <CardDescription>
+                                <CardTitle className="text-3xl text-white mb-2">Your Health Score</CardTitle>
+                                <CardDescription className="text-zinc-400 text-base">
                                     {healthData?.questionnaire?.last_taken
                                         ? `Last updated: ${new Date(healthData.questionnaire.last_taken).toLocaleDateString()}`
                                         : "Take your first assessment to see your score"
                                     }
                                 </CardDescription>
                             </div>
-                            <div className="flex items-center space-x-2">
-                                <Badge className={scoreStatus.color}>{scoreStatus.text}</Badge>
-                                {/* ADD THIS - AI Badge when AI score is present */}
+                            <div className="flex items-center space-x-3">
+                                <Badge className={`${scoreStatus.color} py-2 px-4 text-base`}>{scoreStatus.text}</Badge>
                                 {aiScore > 0 && (
-                                    <Badge className="bg-purple-100 text-purple-800">
-                                        AI Enhanced
-                                    </Badge>
+                                    <Badge className="bg-purple-900 text-purple-300 border border-purple-700 py-2 px-4 text-base">AI Enhanced</Badge>
                                 )}
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-                            {/* Score Circle - FIXED */}
+                        <div className="flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-12">
+                            {/* ✅ SPACIOUS: Increased size of the score circle */}
                             <div className="relative flex-shrink-0">
-                                <div className="w-32 h-32 rounded-full border-8 border-gray-200 flex items-center justify-center relative overflow-hidden">
-                                    {/* Background circle */}
-                                    <div className="absolute inset-2 rounded-full bg-gray-100"></div>
-
-                                    {/* Progress arc */}
-                                    <svg className="absolute inset-0 w-32 h-32 transform -rotate-90" viewBox="0 0 128 128">
+                                <div className="w-40 h-40 rounded-full border-[12px] border-zinc-800 flex items-center justify-center relative overflow-hidden">
+                                    <div className="absolute inset-2 rounded-full bg-zinc-900"></div>
+                                    <svg className="absolute inset-0 w-40 h-40 transform -rotate-90" viewBox="0 0 160 160">
                                         <circle
-                                            cx="64"
-                                            cy="64"
-                                            r="56"
-                                            fill="none"
-                                            stroke="#3b82f6"
-                                            strokeWidth="8"
-                                            strokeDasharray={`${Math.max(0, Math.min(100, currentScore)) * 3.52} 352`} // FIXED: Clamp value
+                                            cx="80" cy="80" r="70" fill="none"
+                                            stroke="#10b981"
+                                            strokeWidth="12"
+                                            strokeDasharray={`${Math.max(0, Math.min(100, currentScore)) * 4.4} 440`}
                                             strokeLinecap="round"
                                             className="transition-all duration-1000 ease-out"
                                         />
                                     </svg>
-
-                                    {/* Score text */}
                                     <div className="relative z-10 text-center">
-                                        <span className={`text-3xl font-bold ${getScoreColor(currentScore)}`}>
-                                            {currentScore}
-                                        </span>
-                                        <div className="text-xs text-gray-500">/ 100</div>
+                                        <span className={`text-5xl font-bold ${getScoreColor(currentScore)}`}>{currentScore}</span>
+                                        <div className="text-sm text-zinc-500">/ 100</div>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Score Details - FIXED */}
-                            <div className="flex-1 space-y-4 text-center md:text-left">
+                            <div className="flex-1 w-full space-y-6 text-center md:text-left">
                                 <div>
-                                    <div className="flex items-center justify-center md:justify-start space-x-2 mb-2">
-                                        <span className="text-lg font-medium">Overall Health</span>
+                                    <div className="flex items-center justify-center md:justify-start space-x-2 mb-3">
+                                        <span className="text-2xl font-medium text-white">Overall Health</span>
                                         {healthData?.trend && getTrendIcon(healthData.trend)}
                                     </div>
-                                    <Progress value={currentScore} className="h-3" />
+                                    <Progress value={currentScore} className="h-4 [&>*]:bg-emerald-500 bg-zinc-800" />
                                 </div>
-
                                 {healthData?.questionnaire && (
-                                    <p className="text-sm text-gray-600">
+                                    <p className="text-base text-zinc-400 max-w-lg">
                                         Based on your lifestyle, diet, exercise, and mental health assessment
                                         {aiScore > 0 && " enhanced with AI analysis"}
                                     </p>
                                 )}
-
-                                {/* ADD THIS - Score Breakdown */}
                                 {(questionnaireScore > 0 || aiScore > 0) && (
-                                    <div className="text-sm text-gray-600 space-y-1 mt-4">
-                                        <div className="font-medium text-gray-700 mb-2">Score Breakdown:</div>
+                                    <div className="text-base text-zinc-400 space-y-2 pt-4">
+                                        <div className="font-medium text-zinc-300 mb-3 text-lg">Score Breakdown:</div>
                                         {questionnaireScore > 0 && (
-                                            <div className="flex justify-between">
-                                                <span>Questionnaire Score:</span>
-                                                <span className="font-medium">{questionnaireScore}</span>
-                                            </div>
+                                            <div className="flex justify-between"><span className="opacity-80">Questionnaire Score:</span><span className="font-medium text-zinc-200">{questionnaireScore}</span></div>
                                         )}
                                         {aiScore > 0 && (
-                                            <div className="flex justify-between">
-                                                <span>AI Health Score:</span>
-                                                <span className="font-medium text-purple-600">{aiScore}</span>
-                                            </div>
+                                            <div className="flex justify-between"><span className="opacity-80">AI Health Score:</span><span className="font-medium text-purple-400">{aiScore}</span></div>
                                         )}
                                         {questionnaireScore > 0 && aiScore > 0 && (
-                                            <div className="flex justify-between border-t pt-1 mt-2">
-                                                <span className="font-medium">Combined Score:</span>
-                                                <span className="font-bold text-blue-600">{combinedScore}</span>
-                                            </div>
+                                            <div className="flex justify-between border-t border-zinc-800 pt-3 mt-3"><span className="font-medium text-white">Combined Score:</span><span className="font-bold text-emerald-400 text-lg">{combinedScore}</span></div>
                                         )}
                                     </div>
                                 )}
@@ -216,150 +188,41 @@ export default function HealthScoreDashboard({ patient }) {
 
                 {/* Category Breakdown */}
                 {Object.keys(categoryScores).length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Card>
-                            <CardHeader className="pb-3">
-                                <div className="flex items-center space-x-2">
-                                    <Apple className="h-5 w-5 text-green-600" />
-                                    <CardTitle className="text-lg">Diet & Nutrition</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <Progress value={categoryScores.diet || 0} className="flex-1 mr-3" />
-                                    <span className="font-semibold">{categoryScores.diet || 0}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-3">
-                                <div className="flex items-center space-x-2">
-                                    <Activity className="h-5 w-5 text-blue-600" />
-                                    <CardTitle className="text-lg">Physical Activity</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <Progress value={categoryScores.exercise || 0} className="flex-1 mr-3" />
-                                    <span className="font-semibold">{categoryScores.exercise || 0}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-3">
-                                <div className="flex items-center space-x-2">
-                                    <Moon className="h-5 w-5 text-purple-600" />
-                                    <CardTitle className="text-lg">Sleep & Rest</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <Progress value={categoryScores.sleep || 0} className="flex-1 mr-3" />
-                                    <span className="font-semibold">{categoryScores.sleep || 0}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card>
-                            <CardHeader className="pb-3">
-                                <div className="flex items-center space-x-2">
-                                    <Smile className="h-5 w-5 text-yellow-600" />
-                                    <CardTitle className="text-lg">Mental Health</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <Progress value={categoryScores.mental_health || 0} className="flex-1 mr-3" />
-                                    <span className="font-semibold">{categoryScores.mental_health || 0}</span>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Apple className="h-6 w-6 text-emerald-400" /><span>Diet & Nutrition</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.diet || 0} className="flex-1 mr-4 h-3 [&>*]:bg-emerald-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.diet || 0}</span></CardContent></Card>
+                        <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Activity className="h-6 w-6 text-blue-400" /><span>Physical Activity</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.exercise || 0} className="flex-1 mr-4 h-3 [&>*]:bg-blue-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.exercise || 0}</span></CardContent></Card>
+                        <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Moon className="h-6 w-6 text-purple-400" /><span>Sleep & Rest</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.sleep || 0} className="flex-1 mr-4 h-3 [&>*]:bg-purple-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.sleep || 0}</span></CardContent></Card>
+                        <Card className="bg-zinc-900 border-zinc-800 p-2"><CardHeader className="pb-3"><CardTitle className="text-lg text-white flex items-center space-x-3"><Smile className="h-6 w-6 text-yellow-400" /><span>Mental Health</span></CardTitle></CardHeader><CardContent className="flex items-center justify-between pt-2"><Progress value={categoryScores.mental_health || 0} className="flex-1 mr-4 h-3 [&>*]:bg-yellow-500 bg-zinc-800" /><span className="font-semibold text-white text-lg">{categoryScores.mental_health || 0}</span></CardContent></Card>
                     </div>
                 )}
 
-                {/* AI Recommendations - FIXED & NO HARDCODING */}
+                {/* AI Recommendations */}
                 {healthData?.recommendations && healthData.recommendations.length > 0 ? (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center space-x-2">
-                                <Brain className="h-5 w-5 text-purple-600" />
-                                <span>AI Health Recommendations</span>
-                            </CardTitle>
-                            <CardDescription>
-                                Personalized suggestions to improve your health score
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-3">
-                                {healthData.recommendations.map((rec, index) => (
-                                    <div key={index} className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                                        <div className="flex-1">
-                                            <p className="font-medium text-blue-900">{rec.title}</p>
-                                            <p className="text-sm text-blue-700 mt-1">{rec.description}</p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                {rec.priority && (
-                                                    <Badge
-                                                        variant={rec.priority === 'high' ? 'destructive' : rec.priority === 'medium' ? 'secondary' : 'outline'}
-                                                        className="text-xs"
-                                                    >
-                                                        {rec.priority} priority
-                                                    </Badge>
-                                                )}
-                                                {rec.category && (
-                                                    <Badge variant="outline" className="text-xs capitalize">
-                                                        {rec.category}
-                                                    </Badge>
-                                                )}
-                                            </div>
-                                        </div>
+                    <Card className="bg-zinc-900 border-zinc-800 p-6">
+                        <CardHeader className="mb-4"><CardTitle className="flex items-center space-x-3 text-white text-xl"><Brain className="h-6 w-6 text-purple-400" /><span>AI Health Recommendations</span></CardTitle><CardDescription className="text-zinc-400 text-base mt-2">Personalized suggestions to improve your health score</CardDescription></CardHeader>
+                        <CardContent className="space-y-4">
+                            {healthData.recommendations.map((rec, index) => (
+                                <div key={index} className="flex items-start space-x-4 p-5 bg-zinc-800 rounded-lg border border-zinc-700">
+                                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                                    <div className="flex-1">
+                                        <p className="font-medium text-blue-300 text-lg">{rec.title}</p>
+                                        <p className="text-base text-zinc-400 mt-2">{rec.description}</p>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                ) : healthData?.questionnaire ? (
-                    // Show when questionnaire is taken but no AI recommendations yet
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center space-x-2">
-                                <Lightbulb className="h-5 w-5 text-yellow-600" />
-                                <span>AI Recommendations</span>
-                            </CardTitle>
-                            <CardDescription>
-                                AI is analyzing your health data to generate personalized recommendations
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-center py-8">
-                                <div className="animate-pulse space-y-3">
-                                    <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
-                                    <div className="h-4 bg-gray-200 rounded w-5/6 mx-auto"></div>
                                 </div>
-                                <p className="text-sm text-gray-500 mt-4">
-                                    Generating personalized health insights...
-                                </p>
-                            </div>
+                            ))}
                         </CardContent>
                     </Card>
                 ) : null}
 
                 {/* No Data State */}
                 {!healthData?.questionnaire && (
-                    <Card>
-                        <CardContent className="text-center py-12">
-                            <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-xl font-semibold text-gray-500 mb-2">
-                                Start Your Health Journey
-                            </h3>
-                            <p className="text-gray-400 mb-6">
-                                Take our comprehensive health assessment to get your personalized health score and AI-powered recommendations.
-                            </p>
-                            <Button onClick={() => setShowQuestionnaire(true)} size="lg">
-                                <Play className="h-4 w-4 mr-2" />
+                    <Card className="bg-zinc-900 border-zinc-800 p-8">
+                        <CardContent className="text-center py-16">
+                            <Heart className="h-20 w-20 text-zinc-600 mx-auto mb-6" />
+                            <h3 className="text-2xl font-semibold text-zinc-400 mb-4">Start Your Health Journey</h3>
+                            <p className="text-lg text-zinc-500 mb-8 max-w-lg mx-auto">Take our comprehensive health assessment to get your personalized score and AI-powered recommendations.</p>
+                            <Button onClick={() => setShowQuestionnaire(true)} size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white h-14 px-8 text-lg">
+                                <Play className="h-5 w-5 mr-3" />
                                 Take Health Assessment
                             </Button>
                         </CardContent>
@@ -367,7 +230,6 @@ export default function HealthScoreDashboard({ patient }) {
                 )}
             </div>
 
-            {/* Questionnaire Modal */}
             {showQuestionnaire && (
                 <HealthQuestionnaire
                     isOpen={showQuestionnaire}
