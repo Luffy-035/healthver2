@@ -71,6 +71,11 @@ export async function createOrGetChat(appointmentId) {
       throw new Error("Appointment not found");
     }
 
+    // Check if doctor or patient data is missing
+    if (!appointment.doctor || !appointment.patient) {
+      throw new Error("Appointment has missing doctor or patient information");
+    }
+
     // Check if user has access to this appointment
     const hasAccess =
       appointment.doctor.userId === userId ||

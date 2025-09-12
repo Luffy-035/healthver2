@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, memo } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Calendar } from "@/components/ui/calendar";
 import { createAppointment } from "@/actions/appointmentActions";
 import { createPaymentOrder, verifyPayment } from "@/actions/paymentActions";
@@ -13,6 +14,9 @@ function BookAppointmentModal({ doctor, isOpen, onClose, onViewAppointments }) {
   const [loading, setLoading] = useState(false);
   const [paymentStep, setPaymentStep] = useState("booking");
   const [isShowing, setIsShowing] = useState(false);
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   // --- Logic remains unchanged ---
   const today = useMemo(() => {
@@ -53,10 +57,17 @@ function BookAppointmentModal({ doctor, isOpen, onClose, onViewAppointments }) {
   }, [onClose]);
 
   const handleViewAppointment = useCallback(() => {
-    if (onViewAppointments) {
+    // Check if current page is /chatbot, then redirect to /patient with tab switch
+    if (pathname === "/chatbot") {
+      router.push("/patient?tab=my-appointments");
+    } else if (onViewAppointments) {
+      // If we're already on patient page, use the callback to switch tabs
       onViewAppointments();
+    } else {
+      // Fallback: navigate to patient page with tab parameter
+      router.push("/patient?tab=my-appointments");
     }
-  }, [onViewAppointments]);
+  }, [pathname, router, onViewAppointments]);
 
   const isDateDisabled = useCallback(
     (date) => {

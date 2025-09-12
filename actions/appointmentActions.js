@@ -79,7 +79,17 @@ export async function getPatientAppointments() {
 
     console.log("Found patient appointments:", appointments.length);
 
-    return JSON.parse(JSON.stringify(appointments));
+    // Filter out appointments where doctor was not populated (deleted doctors)
+    const validAppointments = appointments.filter(
+      (appointment) => appointment.doctor !== null
+    );
+
+    console.log(
+      "Valid appointments after filtering:",
+      validAppointments.length
+    );
+
+    return JSON.parse(JSON.stringify(validAppointments));
   } catch (error) {
     console.error("Error fetching patient appointments:", error);
     return [];
@@ -118,7 +128,17 @@ export async function getDoctorAppointments() {
 
     console.log("Found doctor appointments:", appointments.length);
 
-    return JSON.parse(JSON.stringify(appointments));
+    // Filter out appointments where patient was not populated (deleted patients)
+    const validAppointments = appointments.filter(
+      (appointment) => appointment.patient !== null
+    );
+
+    console.log(
+      "Valid doctor appointments after filtering:",
+      validAppointments.length
+    );
+
+    return JSON.parse(JSON.stringify(validAppointments));
   } catch (error) {
     console.error("Error fetching doctor appointments:", error);
     return [];

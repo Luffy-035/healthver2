@@ -98,8 +98,8 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
 
     setSending(true);
     const senderName = isDoctor
-      ? `${appointment.doctor.name}`
-      : appointment.patient.name;
+      ? `${appointment.doctor?.name || "Doctor"}`
+      : appointment.patient?.name || "Patient";
 
     console.log("Sending message:", {
       chatId,
@@ -157,7 +157,10 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
           <DialogTitle className="flex items-center space-x-2 text-white">
             <MessageCircle className="h-5 w-5 text-emerald-400" />
             <span>
-              Chat with {isDoctor ? otherUser.name : `${otherUser.name}`}
+              Chat with{" "}
+              {isDoctor
+                ? otherUser?.name || "Patient"
+                : otherUser?.name || "Doctor"}
             </span>
           </DialogTitle>
           <DialogDescription className="text-zinc-400">

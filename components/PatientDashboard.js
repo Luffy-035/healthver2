@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import BookAppointmentModal from "./BookAppointmentModal";
 import ChatModal from "./ChatModal";
@@ -24,6 +25,7 @@ import { getPatientAppointments } from "@/actions/appointmentActions";
 import { UserButton } from "@clerk/nextjs";
 
 export default function PatientDashboard({ doctors }) {
+  const searchParams = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -37,6 +39,14 @@ export default function PatientDashboard({ doctors }) {
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    if (tabParam === "my-appointments") {
+      setActiveTab("my-appointments");
+    }
+  }, [searchParams]);
 
   const fetchAppointments = async () => {
     try {
@@ -323,10 +333,11 @@ export default function PatientDashboard({ doctors }) {
                         <div className="flex items-start justify-between">
                           <div>
                             <h2 className="text-lg font-semibold text-white">
-                              {appointment.doctor.name}
+                              {appointment.doctor?.name ||
+                                "Doctor not available"}
                             </h2>
                             <p className="text-emerald-400 text-sm">
-                              {appointment.doctor.specialization}
+                              {appointment.doctor?.specialization || "N/A"}
                             </p>
                           </div>
                           <span
@@ -404,17 +415,18 @@ export default function PatientDashboard({ doctors }) {
                           </div>
                         )}
 
-                        {appointment.status === "confirmed" && (
-                          <div className="pt-2">
-                            <button
-                              onClick={() => handleOpenChat(appointment)}
-                              className="w-full bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-700 hover:border-emerald-600 transition-all duration-300 rounded-xl h-9 px-3 inline-flex items-center justify-center text-sm"
-                            >
-                              <MessageCircle className="h-4 w-4 mr-2" />
-                              Chat with Doctor
-                            </button>
-                          </div>
-                        )}
+                        {appointment.status === "confirmed" &&
+                          appointment.doctor && (
+                            <div className="pt-2">
+                              <button
+                                onClick={() => handleOpenChat(appointment)}
+                                className="w-full bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-700 hover:border-emerald-600 transition-all duration-300 rounded-xl h-9 px-3 inline-flex items-center justify-center text-sm"
+                              >
+                                <MessageCircle className="h-4 w-4 mr-2" />
+                                Chat with Doctor
+                              </button>
+                            </div>
+                          )}
                       </div>
                     </div>
                   ))}
