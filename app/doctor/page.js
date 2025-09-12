@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import connectDB from "@/lib/db";
 import Doctor from "@/models/Doctor";
 import DoctorDashboard from "@/components/DoctorDashboard";
+import { AlertCircle } from "lucide-react";
 
 export default async function DoctorPage() {
   const { userId, sessionClaims } = await auth();

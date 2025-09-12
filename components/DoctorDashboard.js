@@ -10,6 +10,7 @@ import { Calendar, Clock, User, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getDoctorAppointments, updateAppointmentStatus } from "@/actions/appointmentActions";
 import ChatModal from "./ChatModal";
+import { AlertCircle } from "lucide-react";
 
 export default function DoctorDashboard({ doctor }) {
   const [appointments, setAppointments] = useState([]);
@@ -72,6 +73,7 @@ export default function DoctorDashboard({ doctor }) {
   });
 
   return (
+    
     <div className="min-h-screen bg-black p-6 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900/50 to-black"></div>

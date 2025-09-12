@@ -8,11 +8,14 @@ export default async function HealthPage() {
   const { userId, sessionClaims } = await auth();
   
   if (!userId) {
+    console.log("TEST1")
     redirect('/');
   }
 
   // Only patients can access health score
   if (sessionClaims?.role?.role !== 'patient') {
+        console.log("TEST2")
+
     redirect('/');
   }
 

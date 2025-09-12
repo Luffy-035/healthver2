@@ -34,7 +34,7 @@ export async function POST(request) {
         }
       ],
       model: "llama-3.1-8b-instant", // You can change this to other Groq models
-      temperature: 0.7,
+      temperature: 0.2,
       max_tokens: 1000,
       response_format: { type: "json_object" }
     });
