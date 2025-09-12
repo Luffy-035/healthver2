@@ -6,12 +6,12 @@ import { createAppointment } from "@/actions/appointmentActions";
 import { createPaymentOrder, verifyPayment } from "@/actions/paymentActions";
 import { CalendarDays, Clock, CreditCard, CheckCircle } from "lucide-react";
 
-function BookAppointmentModal({ doctor, isOpen, onClose }) {
+function BookAppointmentModal({ doctor, isOpen, onClose, onViewAppointments }) {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedSlot, setSelectedSlot] = useState('');
-  const [reason, setReason] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState("");
+  const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
-  const [paymentStep, setPaymentStep] = useState('booking');
+  const [paymentStep, setPaymentStep] = useState("booking");
   const [isShowing, setIsShowing] = useState(false);
 
   // --- Logic remains unchanged ---
@@ -21,39 +21,57 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
     return d;
   }, []);
 
-  const isDateAvailable = useCallback((date) => {
-    if (!doctor.availability) return false;
-    const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-    return doctor.availability.some(avail => avail.day === dayName && avail.slots.length > 0);
-  }, [doctor.availability]);
+  const isDateAvailable = useCallback(
+    (date) => {
+      if (!doctor.availability) return false;
+      const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+      return doctor.availability.some(
+        (avail) => avail.day === dayName && avail.slots.length > 0
+      );
+    },
+    [doctor.availability]
+  );
 
   const getAvailableSlots = useCallback(() => {
     if (!selectedDate || !doctor.availability) return [];
-    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
-    const availability = doctor.availability.find(avail => avail.day === dayName);
+    const dayName = selectedDate.toLocaleDateString("en-US", {
+      weekday: "long",
+    });
+    const availability = doctor.availability.find(
+      (avail) => avail.day === dayName
+    );
     return availability?.slots || [];
   }, [selectedDate, doctor.availability]);
 
   const handleClose = useCallback(() => {
     setSelectedDate(null);
-    setSelectedSlot('');
-    setReason('');
-    setPaymentStep('booking');
+    setSelectedSlot("");
+    setReason("");
+    setPaymentStep("booking");
     setLoading(false);
     onClose();
   }, [onClose]);
 
-  const isDateDisabled = useCallback((date) => {
-    return date < today || !isDateAvailable(date);
-  }, [today, isDateAvailable]);
+  const handleViewAppointment = useCallback(() => {
+    if (onViewAppointments) {
+      onViewAppointments();
+    }
+  }, [onViewAppointments]);
+
+  const isDateDisabled = useCallback(
+    (date) => {
+      return date < today || !isDateAvailable(date);
+    },
+    [today, isDateAvailable]
+  );
 
   const handlePayment = useCallback(async () => {
     if (!selectedDate || !selectedSlot) {
-      alert('Please select date and time slot');
+      alert("Please select date and time slot");
       return;
     }
     if (!window.Razorpay) {
-      alert('Payment system is loading. Please try again.');
+      alert("Payment system is loading. Please try again.");
       return;
     }
     setLoading(true);
@@ -75,19 +93,21 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
             });
             if (verificationResult.success) {
               const appointmentDateTime = new Date(selectedDate);
-              const [hours, minutes] = selectedSlot.split(':');
+              const [hours, minutes] = selectedSlot.split(":");
               appointmentDateTime.setHours(parseInt(hours), parseInt(minutes));
               await createAppointment({
                 doctorId: doctor._id,
                 appointmentDate: appointmentDateTime.toISOString(),
                 reason,
-                paymentId: verificationResult.paymentId
+                paymentId: verificationResult.paymentId,
               });
-              setPaymentStep('success');
+              setPaymentStep("success");
             }
           } catch (error) {
-            console.error('Payment verification error:', error);
-            alert(`Payment verification failed: ${error.message}. Please contact support with payment ID: ${response.razorpay_payment_id}`);
+            console.error("Payment verification error:", error);
+            alert(
+              `Payment verification failed: ${error.message}. Please contact support with payment ID: ${response.razorpay_payment_id}`
+            );
           } finally {
             setLoading(false);
           }
@@ -101,16 +121,16 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
           color: "#10b981",
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             setLoading(false);
-          }
-        }
+          },
+        },
       };
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error) {
-      console.error('Payment initiation failed:', error);
-      alert('Failed to initiate payment: ' + error.message);
+      console.error("Payment initiation failed:", error);
+      alert("Failed to initiate payment: " + error.message);
       setLoading(false);
     }
   }, [selectedDate, selectedSlot, doctor._id, doctor.name, reason]);
@@ -118,8 +138,8 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
   useEffect(() => {
     const loadRazorpay = () => {
       if (window.Razorpay) return;
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
       document.head.appendChild(script);
     };
     if (isOpen) {
@@ -135,34 +155,46 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
       return () => clearTimeout(timer);
     }
   }, [isOpen]);
-  
+
   if (!isShowing) {
     return null;
   }
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-300 ${
+        isOpen ? "opacity-100" : "opacity-0"
+      }`}
     >
-      <div onClick={handleClose} className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300"></div>
+      <div
+        onClick={handleClose}
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300"
+      ></div>
 
       {/* ✅ THEME: Using zinc-900 for the modal background */}
       <div
-        className={`custom-scrollbar relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-zinc-800/80 rounded-2xl shadow-2xl p-8 transition-all duration-300 ${isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}`}
+        className={`custom-scrollbar relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-zinc-900 border border-zinc-800/80 rounded-2xl shadow-2xl p-8 transition-all duration-300 ${
+          isOpen
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-4"
+        }`}
       >
-        {paymentStep === 'success' ? (
+        {paymentStep === "success" ? (
           <div className="text-center space-y-6">
             <div className="mx-auto p-4 bg-emerald-500/10 rounded-full w-fit border border-emerald-400/30">
               <CheckCircle className="h-10 w-10 text-emerald-400" />
             </div>
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-white">Appointment Booked!</h3>
+              <h3 className="text-2xl font-bold text-white">
+                Appointment Booked!
+              </h3>
               <p className="text-zinc-300 text-lg">
-                Your appointment with {doctor.name} has been successfully booked.
+                Your appointment with {doctor.name} has been successfully
+                booked.
               </p>
             </div>
             <button
-              onClick={handleClose}
+              onClick={handleViewAppointment}
               className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold border border-emerald-500 shadow-lg hover:shadow-emerald-500/20 py-4 text-lg rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-zinc-900"
             >
               View My Appointments
@@ -171,17 +203,25 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
         ) : (
           <>
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-white">Book Appointment</h2>
-              <p className="text-zinc-400 text-lg mt-1">Schedule an appointment with {doctor.name}</p>
+              <h2 className="text-2xl font-bold text-white">
+                Book Appointment
+              </h2>
+              <p className="text-zinc-400 text-lg mt-1">
+                Schedule an appointment with {doctor.name}
+              </p>
             </div>
-            
+
             <div className="space-y-6">
               <div className="bg-zinc-800/50 p-4 rounded-lg border border-zinc-700/60">
-                <h3 className="font-semibold text-lg text-white">{doctor.name}</h3>
+                <h3 className="font-semibold text-lg text-white">
+                  {doctor.name}
+                </h3>
                 <p className="text-emerald-400">{doctor.specialization}</p>
                 <div className="flex items-center space-x-4 mt-2 text-sm text-zinc-300">
                   <span>₹{doctor.consultationFee}</span>
-                  <span className="bg-zinc-700 text-zinc-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">{doctor.category}</span>
+                  <span className="bg-zinc-700 text-zinc-200 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                    {doctor.category}
+                  </span>
                 </div>
               </div>
 
@@ -195,17 +235,17 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
                   <div
                     className="bg-zinc-800/50 text-white rounded-lg border border-zinc-700/60 p-4"
                     style={{
-                      '--radius': '0.5rem',
-                      '--background': 'transparent',
-                      '--foreground': 'hsl(240 5% 96%)',          // zinc-100
-                      '--primary': 'hsl(160, 100%, 30%)',          // A darker emerald
-                      '--primary-foreground': 'hsl(240 5% 96%)',    // zinc-100
-                      '--accent': 'hsl(240 4% 26%)',               // zinc-800
-                      '--accent-foreground': 'hsl(240 5% 96%)',    // zinc-100
-                      '--border': 'hsl(240 5% 34%)',               // zinc-700
-                      '--ring': 'hsl(160, 100%, 40%)',            // Brighter emerald
-                      '--rdp-cell-size': '52px',
-                      '--rdp-caption-end': '1rem',
+                      "--radius": "0.5rem",
+                      "--background": "transparent",
+                      "--foreground": "hsl(240 5% 96%)", // zinc-100
+                      "--primary": "hsl(160, 100%, 30%)", // A darker emerald
+                      "--primary-foreground": "hsl(240 5% 96%)", // zinc-100
+                      "--accent": "hsl(240 4% 26%)", // zinc-800
+                      "--accent-foreground": "hsl(240 5% 96%)", // zinc-100
+                      "--border": "hsl(240 5% 34%)", // zinc-700
+                      "--ring": "hsl(160, 100%, 40%)", // Brighter emerald
+                      "--rdp-cell-size": "52px",
+                      "--rdp-caption-end": "1rem",
                     }}
                   >
                     <Calendar
@@ -232,22 +272,29 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
                           onClick={() => setSelectedSlot(slot)}
                           className={`px-2 py-2 text-sm font-semibold rounded-md transition-all border ${
                             selectedSlot === slot
-                              ? 'bg-emerald-600 text-white border-emerald-500 shadow'
-                              : 'bg-zinc-800 text-zinc-200 border-zinc-700 hover:border-emerald-600/50 hover:text-white'
+                              ? "bg-emerald-600 text-white border-emerald-500 shadow"
+                              : "bg-zinc-800 text-zinc-200 border-zinc-700 hover:border-emerald-600/50 hover:text-white"
                           } focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900`}
                         >
                           {slot}
                         </button>
                       ))}
                     </div>
-                     {getAvailableSlots().length === 0 && (
-                      <p className="text-zinc-500 text-sm mt-2">No slots available for this day.</p>
+                    {getAvailableSlots().length === 0 && (
+                      <p className="text-zinc-500 text-sm mt-2">
+                        No slots available for this day.
+                      </p>
                     )}
                   </div>
                 )}
-                
+
                 <div>
-                  <label htmlFor="reason" className="text-base font-semibold text-zinc-200 mb-2 block">Reason for Visit (Optional)</label>
+                  <label
+                    htmlFor="reason"
+                    className="text-base font-semibold text-zinc-200 mb-2 block"
+                  >
+                    Reason for Visit (Optional)
+                  </label>
                   <textarea
                     id="reason"
                     value={reason}
@@ -260,7 +307,9 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
 
                 {selectedDate && selectedSlot && (
                   <div className="bg-emerald-500/10 p-4 rounded-lg border border-emerald-400/20">
-                    <h4 className="font-semibold mb-2 text-white">Appointment Summary</h4>
+                    <h4 className="font-semibold mb-2 text-white">
+                      Appointment Summary
+                    </h4>
                     <div className="space-y-2 text-sm text-zinc-300">
                       <div className="flex justify-between">
                         <span>Date:</span>
@@ -279,20 +328,22 @@ function BookAppointmentModal({ doctor, isOpen, onClose }) {
                 )}
 
                 <div className="flex space-x-4 pt-2">
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={handleClose}
                     className="w-full bg-zinc-700/70 hover:bg-zinc-700 text-zinc-200 font-bold border border-zinc-600/80 py-3 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 focus:ring-offset-zinc-900"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={handlePayment}
                     disabled={loading || !selectedDate || !selectedSlot}
                     className="w-full flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold border border-emerald-500 shadow-lg hover:shadow-emerald-500/20 py-3 rounded-lg transition-all disabled:bg-zinc-700 disabled:cursor-not-allowed disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-zinc-900"
                   >
                     <CreditCard className="h-4 w-4 mr-2" />
-                    {loading ? "Processing..." : `Pay ₹${doctor.consultationFee} & Book`}
+                    {loading
+                      ? "Processing..."
+                      : `Pay ₹${doctor.consultationFee} & Book`}
                   </button>
                 </div>
               </div>

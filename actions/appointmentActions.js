@@ -9,7 +9,7 @@ import Doctor from "@/models/Doctor";
 export async function createAppointment(appointmentData) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -24,7 +24,7 @@ export async function createAppointment(appointmentData) {
 
     // Verify doctor exists and is approved
     const doctor = await Doctor.findById(appointmentData.doctorId);
-    if (!doctor || doctor.status !== 'approved') {
+    if (!doctor || doctor.status !== "approved") {
       throw new Error("Doctor not available");
     }
 
@@ -34,14 +34,14 @@ export async function createAppointment(appointmentData) {
       doctor: doctor._id,
       appointmentDate: new Date(appointmentData.appointmentDate),
       reason: appointmentData.reason,
-      status: 'confirmed', // Directly confirmed since payment is made
+      status: "confirmed", // Directly confirmed since payment is made
       paymentId: appointmentData.paymentId,
-      amount: doctor.consultationFee
+      amount: doctor.consultationFee,
     });
 
     await appointment.save();
 
-    return { success: true, appointmentId: appointment._id };
+    return { success: true, appointmentId: appointment._id.toString() };
   } catch (error) {
     console.error("Error creating appointment:", error);
     throw error;
@@ -50,7 +50,7 @@ export async function createAppointment(appointmentData) {
 export async function getPatientAppointments() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -67,12 +67,12 @@ export async function getPatientAppointments() {
 
     const appointments = await Appointment.find({ patient: patient._id })
       .populate({
-        path: 'doctor',
-        select: 'name specialization category consultationFee userId' // Add userId here
+        path: "doctor",
+        select: "name specialization category consultationFee userId", // Add userId here
       })
       .populate({
-        path: 'patient', 
-        select: 'name email userId' // Add userId here
+        path: "patient",
+        select: "name email userId", // Add userId here
       })
       .sort({ appointmentDate: -1 })
       .lean();
@@ -89,7 +89,7 @@ export async function getPatientAppointments() {
 export async function getDoctorAppointments() {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -106,12 +106,12 @@ export async function getDoctorAppointments() {
 
     const appointments = await Appointment.find({ doctor: doctor._id })
       .populate({
-        path: 'patient',
-        select: 'name email userId'
+        path: "patient",
+        select: "name email userId",
       })
       .populate({
-        path: 'doctor',
-        select: 'name specialization category consultationFee userId'
+        path: "doctor",
+        select: "name specialization category consultationFee userId",
       })
       .sort({ appointmentDate: -1 })
       .lean();
@@ -125,12 +125,14 @@ export async function getDoctorAppointments() {
   }
 }
 
-
-
-export async function updateAppointmentStatus(appointmentId, status, notes = '') {
+export async function updateAppointmentStatus(
+  appointmentId,
+  status,
+  notes = ""
+) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -144,13 +146,13 @@ export async function updateAppointmentStatus(appointmentId, status, notes = '')
     }
 
     const appointment = await Appointment.findOneAndUpdate(
-      { 
-        _id: appointmentId, 
-        doctor: doctor._id 
+      {
+        _id: appointmentId,
+        doctor: doctor._id,
       },
-      { 
+      {
         status,
-        ...(notes && { notes })
+        ...(notes && { notes }),
       },
       { new: true }
     );
