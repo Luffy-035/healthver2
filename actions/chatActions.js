@@ -10,8 +10,13 @@ import Patient from "@/models/Patient";
 import { pusherServer } from "@/lib/pusher";
 import Pusher from "pusher";
 
-
-export async function sendMessage(chatId, message, senderId, senderName, senderType) {
+export async function sendMessage(
+  chatId,
+  message,
+  senderId,
+  senderName,
+  senderType
+) {
   try {
     await connectDB();
 
@@ -22,38 +27,35 @@ export async function sendMessage(chatId, message, senderId, senderName, senderT
       senderType,
       senderName,
       message,
-      messageType: 'text'
+      messageType: "text",
     });
 
-    console.log('Message saved to DB:', newMessage);
+    console.log("Message saved to DB:", newMessage);
 
     // Send via Pusher - THIS IS KEY!
-    await pusherServer.trigger(`chat-${chatId}`, 'new-message', {
-      _id: newMessage._id,
+    await pusherServer.trigger(`chat-${chatId}`, "new-message", {
+      _id: newMessage._id.toString(),
       chatId: newMessage.chatId,
       senderId: newMessage.senderId,
       senderType: newMessage.senderType,
       senderName: newMessage.senderName,
       message: newMessage.message,
-      createdAt: newMessage.createdAt
+      createdAt: newMessage.createdAt,
     });
 
-    console.log('Message sent via Pusher to channel:', `chat-${chatId}`);
+    console.log("Message sent via Pusher to channel:", `chat-${chatId}`);
 
     return JSON.parse(JSON.stringify(newMessage));
-
   } catch (error) {
     console.error("Error sending message:", error);
     throw error;
   }
 }
 
-
-
 export async function createOrGetChat(appointmentId) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -61,25 +63,25 @@ export async function createOrGetChat(appointmentId) {
     await connectDB();
 
     // Get appointment details
-    const appointment = await Appointment.findById(appointmentId)
-      .populate('doctor patient');
+    const appointment = await Appointment.findById(appointmentId).populate(
+      "doctor patient"
+    );
 
     if (!appointment) {
       throw new Error("Appointment not found");
     }
 
     // Check if user has access to this appointment
-    const hasAccess = (
-      appointment.doctor.userId === userId || 
-      appointment.patient.userId === userId
-    );
+    const hasAccess =
+      appointment.doctor.userId === userId ||
+      appointment.patient.userId === userId;
 
     if (!hasAccess) {
       throw new Error("Unauthorized access");
     }
 
     // Check if appointment is confirmed
-    if (appointment.status !== 'confirmed') {
+    if (appointment.status !== "confirmed") {
       throw new Error("Chat only available for confirmed appointments");
     }
 
@@ -91,12 +93,11 @@ export async function createOrGetChat(appointmentId) {
       chat = await Chat.create({
         appointmentId,
         doctorId: appointment.doctor._id,
-        patientId: appointment.patient._id
+        patientId: appointment.patient._id,
       });
     }
 
     return JSON.parse(JSON.stringify(chat));
-
   } catch (error) {
     console.error("Error creating/getting chat:", error);
     throw error;
@@ -106,7 +107,7 @@ export async function createOrGetChat(appointmentId) {
 export async function getChatMessages(chatId) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -114,17 +115,14 @@ export async function getChatMessages(chatId) {
     await connectDB();
 
     // Verify access to chat
-    const chat = await Chat.findById(chatId)
-      .populate('doctorId patientId');
+    const chat = await Chat.findById(chatId).populate("doctorId patientId");
 
     if (!chat) {
       throw new Error("Chat not found");
     }
 
-    const hasAccess = (
-      chat.doctorId.userId === userId || 
-      chat.patientId.userId === userId
-    );
+    const hasAccess =
+      chat.doctorId.userId === userId || chat.patientId.userId === userId;
 
     if (!hasAccess) {
       throw new Error("Unauthorized access");
@@ -136,7 +134,6 @@ export async function getChatMessages(chatId) {
       .limit(100);
 
     return JSON.parse(JSON.stringify(messages));
-
   } catch (error) {
     console.error("Error getting chat messages:", error);
     throw error;

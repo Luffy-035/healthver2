@@ -26,6 +26,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   const [newMessage, setNewMessage] = useState("");
   const [chatId, setChatId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
 
   const userRole = user?.publicMetadata?.role;
@@ -93,8 +94,9 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    if (!newMessage.trim() || !chatId) return;
+    if (!newMessage.trim() || !chatId || sending) return;
 
+    setSending(true);
     const senderName = isDoctor
       ? `${appointment.doctor.name}`
       : appointment.patient.name;
@@ -119,6 +121,8 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
     } catch (error) {
       console.error("Error sending message:", error);
       alert("Failed to send message: " + error.message);
+    } finally {
+      setSending(false);
     }
   };
 
@@ -142,6 +146,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
     setChatId(null);
     setMessages([]);
     setLoading(true);
+    setSending(false);
     onClose();
   };
 
@@ -233,13 +238,13 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message..."
                 className="flex-1 bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:border-emerald-400 focus:ring-emerald-400"
-                disabled={loading}
+                disabled={loading || sending}
               />
               <Button
                 type="submit"
                 size="sm"
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                disabled={!newMessage.trim() || loading}
+                disabled={!newMessage.trim() || loading || sending}
               >
                 <Send className="h-4 w-4" />
               </Button>
