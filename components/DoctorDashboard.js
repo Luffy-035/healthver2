@@ -105,7 +105,7 @@ export default function DoctorDashboard({ doctor }) {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white">Doctor Dashboard</h1>
-          <p className="text-zinc-400 mt-2">Welcome back, Dr. {doctor.name}</p>
+          <p className="text-zinc-400 mt-2">Welcome back, {doctor.name}</p>
           <UserButton afterSignOutUrl="/" />
         </div>
 

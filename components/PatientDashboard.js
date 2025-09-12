@@ -208,7 +208,7 @@ export default function PatientDashboard({ doctors }) {
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <h2 className="text-xl font-semibold text-white group-hover:text-emerald-300 transition-colors duration-300">
-                              Dr. {doctor.name}
+                              {doctor.name}
                             </h2>
                             <p className="text-lg font-medium text-emerald-400 mt-1">
                               {doctor.specialization}
@@ -313,7 +313,7 @@ export default function PatientDashboard({ doctors }) {
                         <div className="flex items-start justify-between">
                           <div>
                             <h2 className="text-lg font-semibold text-white">
-                              Dr. {appointment.doctor.name}
+                              {appointment.doctor.name}
                             </h2>
                             <p className="text-emerald-400 text-sm">
                               {appointment.doctor.specialization}

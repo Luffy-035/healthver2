@@ -14,7 +14,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, MessageCircle, User, Stethoscope } from "lucide-react";
 import { pusherClient } from "@/lib/pusher";
-import { createOrGetChat, getChatMessages, sendMessage } from "@/actions/chatActions";
+import {
+  createOrGetChat,
+  getChatMessages,
+  sendMessage,
+} from "@/actions/chatActions";
 
 export default function ChatModal({ appointment, isOpen, onClose }) {
   const { user } = useUser();
@@ -25,7 +29,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   const messagesEndRef = useRef(null);
 
   const userRole = user?.publicMetadata?.role;
-  const isDoctor = userRole === 'doctor';
+  const isDoctor = userRole === "doctor";
   const otherUser = isDoctor ? appointment.patient : appointment.doctor;
 
   // Initialize chat when modal opens
@@ -33,7 +37,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
     if (isOpen && appointment) {
       initializeChat();
     }
-    
+
     return () => {
       // Cleanup when modal closes
       if (chatId) {
@@ -46,10 +50,10 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   useEffect(() => {
     if (chatId) {
       const channel = pusherClient.subscribe(`chat-${chatId}`);
-      
-      channel.bind('new-message', (message) => {
-        console.log('Received new message:', message);
-        setMessages(prev => [...prev, message]);
+
+      channel.bind("new-message", (message) => {
+        console.log("Received new message:", message);
+        setMessages((prev) => [...prev, message]);
         scrollToBottom();
       });
 
@@ -67,18 +71,17 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   const initializeChat = async () => {
     try {
       setLoading(true);
-      console.log('Initializing chat for appointment:', appointment._id);
-      
+      console.log("Initializing chat for appointment:", appointment._id);
+
       // Get or create chat
       const chat = await createOrGetChat(appointment._id);
-      console.log('Got chat:', chat);
+      console.log("Got chat:", chat);
       setChatId(chat._id);
-      
+
       // Load existing messages
       const existingMessages = await getChatMessages(chat._id);
-      console.log('Loaded messages:', existingMessages);
+      console.log("Loaded messages:", existingMessages);
       setMessages(existingMessages);
-      
     } catch (error) {
       console.error("Error initializing chat:", error);
       alert("Failed to load chat: " + error.message);
@@ -89,23 +92,29 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    
+
     if (!newMessage.trim() || !chatId) return;
 
-    const senderName = isDoctor 
-      ? `Dr. ${appointment.doctor.name}` 
+    const senderName = isDoctor
+      ? `${appointment.doctor.name}`
       : appointment.patient.name;
 
-    console.log('Sending message:', {
+    console.log("Sending message:", {
       chatId,
       message: newMessage.trim(),
       senderId: user.id,
       senderName,
-      senderType: userRole
+      senderType: userRole,
     });
 
     try {
-      await sendMessage(chatId, newMessage.trim(), user.id, senderName, userRole);
+      await sendMessage(
+        chatId,
+        newMessage.trim(),
+        user.id,
+        senderName,
+        userRole
+      );
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
@@ -120,9 +129,9 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   };
 
   const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(timestamp).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -142,10 +151,13 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
         <DialogHeader className="p-4 border-b border-zinc-700">
           <DialogTitle className="flex items-center space-x-2 text-white">
             <MessageCircle className="h-5 w-5 text-emerald-400" />
-            <span>Chat with {isDoctor ? otherUser.name : `Dr. ${otherUser.name}`}</span>
+            <span>
+              Chat with {isDoctor ? otherUser.name : `${otherUser.name}`}
+            </span>
           </DialogTitle>
           <DialogDescription className="text-zinc-400">
-            Appointment on {new Date(appointment.appointmentDate).toLocaleDateString()}
+            Appointment on{" "}
+            {new Date(appointment.appointmentDate).toLocaleDateString()}
           </DialogDescription>
         </DialogHeader>
 
@@ -161,28 +173,32 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                 <div className="space-y-2">
                   <MessageCircle className="h-12 w-12 text-zinc-500 mx-auto" />
                   <p className="text-zinc-400">No messages yet</p>
-                  <p className="text-sm text-zinc-500">Start the conversation!</p>
+                  <p className="text-sm text-zinc-500">
+                    Start the conversation!
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 {messages.map((message, index) => {
                   const isOwnMessage = message.senderId === user?.id;
-                  
+
                   return (
                     <div
                       key={message._id || index}
-                      className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${
+                        isOwnMessage ? "justify-end" : "justify-start"
+                      }`}
                     >
                       <div
                         className={`max-w-[70%] rounded-lg px-3 py-2 ${
                           isOwnMessage
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-zinc-800 text-zinc-300'
+                            ? "bg-emerald-600 text-white"
+                            : "bg-zinc-800 text-zinc-300"
                         }`}
                       >
                         <div className="flex items-center space-x-1 mb-1">
-                          {message.senderType === 'doctor' ? (
+                          {message.senderType === "doctor" ? (
                             <Stethoscope className="h-3 w-3" />
                           ) : (
                             <User className="h-3 w-3" />
@@ -199,7 +215,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                     </div>
                   );
                 })}
-                
+
                 <div ref={messagesEndRef} />
               </div>
             )}
@@ -215,8 +231,8 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
                 className="flex-1 bg-zinc-800 border-zinc-700 text-white placeholder-zinc-500 focus:border-emerald-400 focus:ring-emerald-400"
                 disabled={loading}
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 size="sm"
                 className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 disabled={!newMessage.trim() || loading}
