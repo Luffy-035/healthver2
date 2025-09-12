@@ -13,8 +13,8 @@ export default function Home() {
   useEffect(() => {
     if (isLoaded && user) {
       const role = user.publicMetadata?.role;
-      if (role === 'patient') router.push('/patient');
-      if (role === 'doctor') router.push('/doctor');
+      if (role === "patient") router.push("/patient");
+      if (role === "doctor") router.push("/doctor");
     }
   }, [isLoaded, user, router]);
 
@@ -27,9 +27,8 @@ export default function Home() {
           muted
           loop
           playsInline
-          poster="/poster.jpg"
           className="w-full h-full object-cover"
-          style={{ filter: 'brightness(0.3)' }}
+          style={{ filter: "brightness(0.3)" }}
         >
           <source src="/bg.webm" type="video/webm" />
           <source src="/bg.mp4" type="video/mp4" />
@@ -58,8 +57,8 @@ export default function Home() {
 
           {/* ✅ THEME: Changed gray to zinc */}
           <p className="text-xl md:text-2xl text-zinc-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Experience advanced medical diagnostics, personalized health scores, and
-            AI-powered consultations—all in one revolutionary application.
+            Experience advanced medical diagnostics, personalized health scores,
+            and AI-powered consultations—all in one revolutionary application.
           </p>
         </div>
 
