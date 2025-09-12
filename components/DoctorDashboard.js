@@ -103,11 +103,13 @@ export default function DoctorDashboard({ doctor }) {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Doctor Dashboard</h1>
-          <p className="text-zinc-400 mt-2">Welcome back, {doctor.name}</p>
-          <UserButton afterSignOutUrl="/" />
-        </div>
+ <div className="flex items-center justify-between mb-8">
+  <div>
+    <h1 className="text-3xl font-bold text-white">Doctor Dashboard</h1>
+    <p className="text-zinc-400 mt-1">Welcome back, {doctor.name}</p>
+  </div>
+  <UserButton afterSignOutUrl="/" />
+</div>
 
         {doctor.status === "approved" ? (
           <Tabs defaultValue="appointments" className="space-y-8">

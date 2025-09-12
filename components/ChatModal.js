@@ -148,7 +148,7 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0 bg-zinc-900 border-zinc-700">
-        <DialogHeader className="p-4 border-b border-zinc-700">
+        <DialogHeader className="flex-shrink-0 p-4 border-b border-zinc-700">
           <DialogTitle className="flex items-center space-x-2 text-white">
             <MessageCircle className="h-5 w-5 text-emerald-400" />
             <span>
@@ -161,68 +161,72 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Messages Area */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 p-4">
-            {loading ? (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-zinc-400">Loading chat...</div>
-              </div>
-            ) : messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="space-y-2">
-                  <MessageCircle className="h-12 w-12 text-zinc-500 mx-auto" />
-                  <p className="text-zinc-400">No messages yet</p>
-                  <p className="text-sm text-zinc-500">
-                    Start the conversation!
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message, index) => {
-                  const isOwnMessage = message.senderId === user?.id;
-
-                  return (
-                    <div
-                      key={message._id || index}
-                      className={`flex ${
-                        isOwnMessage ? "justify-end" : "justify-start"
-                      }`}
-                    >
-                      <div
-                        className={`max-w-[70%] rounded-lg px-3 py-2 ${
-                          isOwnMessage
-                            ? "bg-emerald-600 text-white"
-                            : "bg-zinc-800 text-zinc-300"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-1 mb-1">
-                          {message.senderType === "doctor" ? (
-                            <Stethoscope className="h-3 w-3" />
-                          ) : (
-                            <User className="h-3 w-3" />
-                          )}
-                          <span className="text-xs font-medium">
-                            {message.senderName}
-                          </span>
-                          <span className="text-xs text-zinc-400">
-                            {formatTime(message.createdAt)}
-                          </span>
-                        </div>
-                        <p className="text-sm">{message.message}</p>
-                      </div>
+        {/* Messages Area - Made scrollable with proper height constraints */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 overflow-hidden">
+            <ScrollArea className="h-full w-full">
+              <div className="p-4">
+                {loading ? (
+                  <div className="flex items-center justify-center h-full min-h-[300px]">
+                    <div className="text-zinc-400">Loading chat...</div>
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full min-h-[300px] text-center">
+                    <div className="space-y-2">
+                      <MessageCircle className="h-12 w-12 text-zinc-500 mx-auto" />
+                      <p className="text-zinc-400">No messages yet</p>
+                      <p className="text-sm text-zinc-500">
+                        Start the conversation!
+                      </p>
                     </div>
-                  );
-                })}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((message, index) => {
+                      const isOwnMessage = message.senderId === user?.id;
 
-                <div ref={messagesEndRef} />
+                      return (
+                        <div
+                          key={message._id || index}
+                          className={`flex ${
+                            isOwnMessage ? "justify-end" : "justify-start"
+                          }`}
+                        >
+                          <div
+                            className={`max-w-[70%] rounded-lg px-3 py-2 ${
+                              isOwnMessage
+                                ? "bg-emerald-600 text-white"
+                                : "bg-zinc-800 text-zinc-300"
+                            }`}
+                          >
+                            <div className="flex items-center space-x-1 mb-1">
+                              {message.senderType === "doctor" ? (
+                                <Stethoscope className="h-3 w-3" />
+                              ) : (
+                                <User className="h-3 w-3" />
+                              )}
+                              <span className="text-xs font-medium">
+                                {message.senderName}
+                              </span>
+                              <span className="text-xs text-zinc-400">
+                                {formatTime(message.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-sm">{message.message}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <div ref={messagesEndRef} />
+                  </div>
+                )}
               </div>
-            )}
-          </ScrollArea>
+            </ScrollArea>
+          </div>
 
-          {/* Message Input */}
-          <div className="border-t border-zinc-700 p-4">
+          {/* Message Input - Fixed at bottom */}
+          <div className="flex-shrink-0 border-t border-zinc-700 p-4">
             <form onSubmit={handleSendMessage} className="flex space-x-2">
               <Input
                 value={newMessage}
