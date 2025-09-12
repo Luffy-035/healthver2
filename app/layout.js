@@ -26,13 +26,22 @@ function SocketInitializer() {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
-
+    <ClerkProvider
+      appearance={{
+        layout: {
+          unsafe_disableDevelopmentModeWarnings: true,
+        },
+      }}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Script 
+          <Script
             src="https://checkout.razorpay.com/v1/checkout.js"
             strategy="lazyOnload"
           />

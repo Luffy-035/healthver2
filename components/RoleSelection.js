@@ -1,7 +1,13 @@
 "use client";
 
 import { useUser, SignInButton } from "@clerk/nextjs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Users } from "lucide-react";
 import { setUserRole } from "@/actions/userActions";
@@ -21,10 +27,10 @@ export default function RoleSelection() {
     setLoading(true);
     try {
       const result = await setUserRole(role);
-      
+
       if (result.success) {
         await user.reload();
-        
+
         if (role === "doctor" && result.needsOnboarding) {
           router.push("/doctor/onboarding");
         } else if (role === "doctor") {
@@ -43,23 +49,29 @@ export default function RoleSelection() {
   return (
     <div className="grid md:grid-cols-2 gap-8">
       {/* Patient Card */}
-      <Card className="group relative overflow-hidden transition-all duration-700 cursor-pointer 
+      <Card
+        className="group relative overflow-hidden transition-all duration-700 cursor-pointer 
                      backdrop-blur-xl bg-white/[0.02] 
                      border border-white/[0.08] 
                      hover:border-white/[0.15] hover:bg-white/[0.04]
                      shadow-2xl hover:shadow-emerald-500/[0.05]
                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/[0.06] before:to-transparent before:opacity-0 
-                     hover:before:opacity-100 before:transition-opacity before:duration-700">
+                     hover:before:opacity-100 before:transition-opacity before:duration-700"
+      >
         <CardHeader className="text-center pb-4 relative z-10">
-          <div className="mx-auto mb-4 p-4 rounded-2xl w-fit relative
+          <div
+            className="mx-auto mb-4 p-4 rounded-2xl w-fit relative
                          backdrop-blur-md bg-white/[0.03] border border-white/[0.1]
                          group-hover:bg-white/[0.06] group-hover:border-emerald-400/[0.2] 
                          transition-all duration-700
                          before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-400/[0.08] before:to-transparent 
-                         before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-700 before:rounded-2xl">
+                         before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-700 before:rounded-2xl"
+          >
             <Users className="h-8 w-8 text-white/70 group-hover:text-emerald-300 transition-colors duration-700 relative z-10" />
           </div>
-          <CardTitle className="text-2xl text-white/90 mb-2 font-medium">Continue as Patient</CardTitle>
+          <CardTitle className="text-2xl text-white/90 mb-2 font-medium">
+            Continue as Patient
+          </CardTitle>
           <CardDescription className="text-base text-white/60">
             Book appointments with qualified doctors
           </CardDescription>
@@ -79,20 +91,23 @@ export default function RoleSelection() {
               Manage your appointments
             </div>
           </div>
-          
+
           {!isSignedIn ? (
-            <SignInButton mode="modal">
-              <Button className="w-full backdrop-blur-md bg-white/[0.08] hover:bg-white/[0.12] 
+            <SignInButton mode="redirect" forceRedirectUrl="/">
+              <Button
+                className="w-full backdrop-blur-md bg-white/[0.08] hover:bg-white/[0.12] 
                                text-white/90 border border-white/[0.15] hover:border-emerald-400/[0.3] 
                                shadow-lg hover:shadow-emerald-500/[0.15] transition-all duration-700
                                relative overflow-hidden
                                before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-400/[0.1] before:to-transparent 
-                               before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700" size="lg">
+                               before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700"
+                size="lg"
+              >
                 Sign In as Patient
               </Button>
             </SignInButton>
           ) : (
-            <Button 
+            <Button
               className="w-full backdrop-blur-md bg-white/[0.08] hover:bg-white/[0.12] 
                          text-white/90 border border-white/[0.15] hover:border-emerald-400/[0.3] 
                          shadow-lg hover:shadow-emerald-500/[0.15] transition-all duration-700
@@ -110,23 +125,29 @@ export default function RoleSelection() {
       </Card>
 
       {/* Doctor Card */}
-      <Card className="group relative overflow-hidden transition-all duration-700 cursor-pointer 
+      <Card
+        className="group relative overflow-hidden transition-all duration-700 cursor-pointer 
                      backdrop-blur-xl bg-white/[0.02] 
                      border border-white/[0.08] 
                      hover:border-emerald-400/[0.25] hover:bg-white/[0.04]
                      shadow-2xl hover:shadow-emerald-500/[0.1]
                      before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-400/[0.08] before:to-transparent before:opacity-0 
-                     hover:before:opacity-100 before:transition-opacity before:duration-700">
+                     hover:before:opacity-100 before:transition-opacity before:duration-700"
+      >
         <CardHeader className="text-center pb-4 relative z-10">
-          <div className="mx-auto mb-4 p-4 rounded-2xl w-fit relative
+          <div
+            className="mx-auto mb-4 p-4 rounded-2xl w-fit relative
                          backdrop-blur-md bg-white/[0.03] border border-white/[0.1]
                          group-hover:bg-emerald-400/[0.08] group-hover:border-emerald-400/[0.3] 
                          transition-all duration-700
                          before:absolute before:inset-0 before:bg-gradient-to-br before:from-emerald-400/[0.12] before:to-transparent 
-                         before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-700 before:rounded-2xl">
+                         before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-700 before:rounded-2xl"
+          >
             <Stethoscope className="h-8 w-8 text-white/70 group-hover:text-emerald-200 transition-colors duration-700 relative z-10" />
           </div>
-          <CardTitle className="text-2xl text-white/90 mb-2 font-medium">Continue as Doctor</CardTitle>
+          <CardTitle className="text-2xl text-white/90 mb-2 font-medium">
+            Continue as Doctor
+          </CardTitle>
           <CardDescription className="text-base text-white/60">
             Manage your practice and appointments
           </CardDescription>
@@ -146,20 +167,23 @@ export default function RoleSelection() {
               Connect with patients
             </div>
           </div>
-          
+
           {!isSignedIn ? (
-            <SignInButton mode="modal">
-              <Button className="w-full backdrop-blur-md bg-emerald-400/[0.15] hover:bg-emerald-400/[0.25] 
+            <SignInButton mode="redirect" forceRedirectUrl="/">
+              <Button
+                className="w-full backdrop-blur-md bg-emerald-400/[0.15] hover:bg-emerald-400/[0.25] 
                                text-white border border-emerald-400/[0.3] hover:border-emerald-300/[0.5] 
                                shadow-lg hover:shadow-emerald-500/[0.25] transition-all duration-700
                                relative overflow-hidden
                                before:absolute before:inset-0 before:bg-gradient-to-r before:from-emerald-300/[0.15] before:to-transparent 
-                               before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700" size="lg">
+                               before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-700"
+                size="lg"
+              >
                 Sign In as Doctor
               </Button>
             </SignInButton>
           ) : (
-            <Button 
+            <Button
               className="w-full backdrop-blur-md bg-emerald-400/[0.15] hover:bg-emerald-400/[0.25] 
                          text-white border border-emerald-400/[0.3] hover:border-emerald-300/[0.5] 
                          shadow-lg hover:shadow-emerald-500/[0.25] transition-all duration-700
