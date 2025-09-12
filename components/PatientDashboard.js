@@ -1,12 +1,27 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, DollarSign, Star, Clock, User, CreditCard, MessageCircle, Activity, Heart, Brain, Shield, Eye, Zap } from "lucide-react";
+import {
+  Calendar,
+  DollarSign,
+  Star,
+  Clock,
+  User,
+  CreditCard,
+  MessageCircle,
+  Activity,
+  Heart,
+  Brain,
+  Shield,
+  Eye,
+  Zap,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import BookAppointmentModal from "./BookAppointmentModal";
 import ChatModal from "./ChatModal";
 import { getPatientAppointments } from "@/actions/appointmentActions";
+import { UserButton } from "@clerk/nextjs";
 
 export default function PatientDashboard({ doctors }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -14,7 +29,8 @@ export default function PatientDashboard({ doctors }) {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedAppointmentForChat, setSelectedAppointmentForChat] = useState(null);
+  const [selectedAppointmentForChat, setSelectedAppointmentForChat] =
+    useState(null);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
 
   useEffect(() => {
@@ -49,26 +65,40 @@ export default function PatientDashboard({ doctors }) {
   }, {});
 
   const categories = ["all", ...Object.keys(doctorsByCategory)];
-  const filteredDoctors = selectedCategory === "all" ? doctors : doctorsByCategory[selectedCategory] || [];
+  const filteredDoctors =
+    selectedCategory === "all"
+      ? doctors
+      : doctorsByCategory[selectedCategory] || [];
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-500/10 text-yellow-400 border-yellow-400/20';
-      case 'confirmed': return 'bg-emerald-500/10 text-emerald-400 border-emerald-400/20';
-      case 'completed': return 'bg-blue-500/10 text-blue-400 border-blue-400/20';
-      case 'cancelled': return 'bg-red-500/10 text-red-400 border-red-400/20';
-      default: return 'bg-zinc-700/20 text-zinc-400 border-zinc-500/40';
+      case "pending":
+        return "bg-yellow-500/10 text-yellow-400 border-yellow-400/20";
+      case "confirmed":
+        return "bg-emerald-500/10 text-emerald-400 border-emerald-400/20";
+      case "completed":
+        return "bg-blue-500/10 text-blue-400 border-blue-400/20";
+      case "cancelled":
+        return "bg-red-500/10 text-red-400 border-red-400/20";
+      default:
+        return "bg-zinc-700/20 text-zinc-400 border-zinc-500/40";
     }
   };
 
   const getCategoryIcon = (category) => {
     switch (category.toLowerCase()) {
-      case 'cardiology': return <Heart className="h-4 w-4" />;
-      case 'neurology': return <Brain className="h-4 w-4" />;
-      case 'dermatology': return <Shield className="h-4 w-4" />;
-      case 'ophthalmology': return <Eye className="h-4 w-4" />;
-      case 'general': return <Activity className="h-4 w-4" />;
-      default: return <Activity className="h-4 w-4" />;
+      case "cardiology":
+        return <Heart className="h-4 w-4" />;
+      case "neurology":
+        return <Brain className="h-4 w-4" />;
+      case "dermatology":
+        return <Shield className="h-4 w-4" />;
+      case "ophthalmology":
+        return <Eye className="h-4 w-4" />;
+      case "general":
+        return <Activity className="h-4 w-4" />;
+      default:
+        return <Activity className="h-4 w-4" />;
     }
   };
 
@@ -95,9 +125,10 @@ export default function PatientDashboard({ doctors }) {
                   <p className="text-zinc-400 mt-2 text-lg">
                     Manage your healthcare appointments with AI-powered insights
                   </p>
+                  <UserButton afterSignOutUrl="/" />
                 </div>
               </div>
-              
+
               <Link
                 href="/chatbot"
                 className="inline-flex items-center justify-center px-5 py-3 text-lg font-medium text-zinc-200 bg-zinc-800/70 border border-zinc-700 rounded-xl hover:bg-zinc-800 hover:text-white hover:border-emerald-600 transition-all duration-300"
@@ -113,14 +144,14 @@ export default function PatientDashboard({ doctors }) {
           <Tabs defaultValue="find-doctors" className="space-y-8">
             <div className="backdrop-blur-xl bg-zinc-900/50 border border-zinc-800/80 rounded-2xl p-3 shadow-2xl">
               <TabsList className="grid w-full grid-cols-2 bg-transparent gap-3 h-auto">
-                <TabsTrigger 
-                  value="find-doctors" 
+                <TabsTrigger
+                  value="find-doctors"
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:border-emerald-500 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/20 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80 transition-all duration-300 border border-zinc-800 rounded-xl py-4 px-6 font-medium bg-zinc-900/70 text-lg"
                 >
                   <Calendar className="h-5 w-5 mr-2" />
                   Find Doctors
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="my-appointments"
                   className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:border-emerald-500 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/20 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80 transition-all duration-300 border border-zinc-800 rounded-xl py-4 px-6 font-medium bg-zinc-900/70 text-lg"
                 >
@@ -149,13 +180,15 @@ export default function PatientDashboard({ doctors }) {
                         onClick={() => setSelectedCategory(category)}
                         className={`capitalize transition-all duration-300 rounded-xl px-5 py-3 font-medium border text-lg ${
                           selectedCategory === category
-                            ? 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20'
-                            : 'bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-700 hover:border-emerald-600'
+                            ? "bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-500/20"
+                            : "bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-700 hover:border-emerald-600"
                         }`}
                       >
                         <span className="flex items-center space-x-2">
                           {category !== "all" && getCategoryIcon(category)}
-                          <span>{category === "all" ? "All Doctors" : category}</span>
+                          <span>
+                            {category === "all" ? "All Doctors" : category}
+                          </span>
                         </span>
                       </button>
                     ))}
@@ -166,8 +199,8 @@ export default function PatientDashboard({ doctors }) {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredDoctors.length > 0 ? (
                   filteredDoctors.map((doctor) => (
-                    <div 
-                      key={doctor._id} 
+                    <div
+                      key={doctor._id}
                       className="group backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 hover:border-emerald-500/40 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 hover:bg-zinc-900/50 rounded-2xl overflow-hidden relative"
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -195,29 +228,36 @@ export default function PatientDashboard({ doctors }) {
                             <span>{doctor.experience} years exp</span>
                             <span>₹{doctor.consultationFee}</span>
                           </div>
-                          
                         </div>
 
-                        {doctor.qualifications && doctor.qualifications.length > 0 && (
-                          <div>
-                            <p className="text-sm font-medium text-zinc-300 mb-2">Qualifications:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {doctor.qualifications.slice(0, 2).map((qual, index) => (
-                                <span key={index} className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full">
-                                  {qual}
-                                </span>
-                              ))}
-                              {doctor.qualifications.length > 2 && (
-                                <span className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full">
-                                  +{doctor.qualifications.length - 2} more
-                                </span>
-                              )}
+                        {doctor.qualifications &&
+                          doctor.qualifications.length > 0 && (
+                            <div>
+                              <p className="text-sm font-medium text-zinc-300 mb-2">
+                                Qualifications:
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {doctor.qualifications
+                                  .slice(0, 2)
+                                  .map((qual, index) => (
+                                    <span
+                                      key={index}
+                                      className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full"
+                                    >
+                                      {qual}
+                                    </span>
+                                  ))}
+                                {doctor.qualifications.length > 2 && (
+                                  <span className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full">
+                                    +{doctor.qualifications.length - 2} more
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        <button 
-                          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02] rounded-xl py-3 font-medium text-lg inline-flex items-center justify-center" 
+                        <button
+                          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02] rounded-xl py-3 font-medium text-lg inline-flex items-center justify-center"
                           onClick={() => handleBookAppointment(doctor)}
                         >
                           <Calendar className="h-5 w-5 mr-2" />
@@ -233,12 +273,13 @@ export default function PatientDashboard({ doctors }) {
                         <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-6">
                           <Activity className="h-16 w-16 text-zinc-500 mx-auto" />
                         </div>
-                        <h3 className="text-xl font-semibold text-zinc-200 mb-2">No doctors found</h3>
+                        <h3 className="text-xl font-semibold text-zinc-200 mb-2">
+                          No doctors found
+                        </h3>
                         <p className="text-zinc-400">
-                          {selectedCategory === "all" 
-                            ? "No approved doctors available at the moment." 
-                            : `No doctors found in ${selectedCategory} category.`
-                          }
+                          {selectedCategory === "all"
+                            ? "No approved doctors available at the moment."
+                            : `No doctors found in ${selectedCategory} category.`}
                         </p>
                       </div>
                     </div>
@@ -256,23 +297,33 @@ export default function PatientDashboard({ doctors }) {
                       <div className="w-4 h-4 bg-emerald-500 rounded-full animate-pulse delay-150"></div>
                       <div className="w-4 h-4 bg-emerald-500 rounded-full animate-pulse delay-300"></div>
                     </div>
-                    <span className="text-zinc-400 text-lg">Loading appointments...</span>
+                    <span className="text-zinc-400 text-lg">
+                      Loading appointments...
+                    </span>
                   </div>
                 </div>
               ) : appointments.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {appointments.map((appointment) => (
-                    <div 
+                    <div
                       key={appointment._id}
                       className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 hover:border-emerald-500/40 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 rounded-2xl overflow-hidden"
                     >
                       <div className="p-6">
                         <div className="flex items-start justify-between">
                           <div>
-                            <h2 className="text-lg font-semibold text-white">Dr. {appointment.doctor.name}</h2>
-                            <p className="text-emerald-400 text-sm">{appointment.doctor.specialization}</p>
+                            <h2 className="text-lg font-semibold text-white">
+                              Dr. {appointment.doctor.name}
+                            </h2>
+                            <p className="text-emerald-400 text-sm">
+                              {appointment.doctor.specialization}
+                            </p>
                           </div>
-                          <span className={`${getStatusColor(appointment.status)} backdrop-blur-sm border font-medium text-xs px-2.5 py-0.5 rounded-full`}>
+                          <span
+                            className={`${getStatusColor(
+                              appointment.status
+                            )} backdrop-blur-sm border font-medium text-xs px-2.5 py-0.5 rounded-full`}
+                          >
                             {appointment.status}
                           </span>
                         </div>
@@ -284,8 +335,13 @@ export default function PatientDashboard({ doctors }) {
                               <Calendar className="h-3 w-3 text-emerald-400" />
                             </div>
                             <span>
-                              {new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
-                                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                              {new Date(
+                                appointment.appointmentDate
+                              ).toLocaleDateString("en-US", {
+                                weekday: "long",
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
                               })}
                             </span>
                           </div>
@@ -294,13 +350,16 @@ export default function PatientDashboard({ doctors }) {
                               <Clock className="h-3 w-3 text-emerald-400" />
                             </div>
                             <span>
-                              {new Date(appointment.appointmentDate).toLocaleTimeString('en-US', {
-                                hour: '2-digit', minute: '2-digit'
+                              {new Date(
+                                appointment.appointmentDate
+                              ).toLocaleTimeString("en-US", {
+                                hour: "2-digit",
+                                minute: "2-digit",
                               })}
                             </span>
                           </div>
                         </div>
-                        
+
                         {appointment.paymentId && appointment.amount && (
                           <div className="flex items-center justify-between text-sm bg-emerald-500/10 rounded-xl p-3 border border-emerald-400/20">
                             <div className="flex items-center text-emerald-300">
@@ -312,24 +371,32 @@ export default function PatientDashboard({ doctors }) {
                             </span>
                           </div>
                         )}
-                        
+
                         {appointment.reason && (
                           <div className="text-sm bg-zinc-800/70 rounded-xl p-3">
-                            <span className="font-medium text-zinc-300">Reason: </span>
-                            <span className="text-zinc-400">{appointment.reason}</span>
-                          </div>
-                        )}
-                        
-                        {appointment.notes && (
-                          <div className="text-sm bg-zinc-800/70 rounded-xl p-3">
-                            <span className="font-medium text-zinc-300">Doctor's Notes: </span>
-                            <span className="text-zinc-400">{appointment.notes}</span>
+                            <span className="font-medium text-zinc-300">
+                              Reason:{" "}
+                            </span>
+                            <span className="text-zinc-400">
+                              {appointment.reason}
+                            </span>
                           </div>
                         )}
 
-                        {appointment.status === 'confirmed' && (
+                        {appointment.notes && (
+                          <div className="text-sm bg-zinc-800/70 rounded-xl p-3">
+                            <span className="font-medium text-zinc-300">
+                              Doctor's Notes:{" "}
+                            </span>
+                            <span className="text-zinc-400">
+                              {appointment.notes}
+                            </span>
+                          </div>
+                        )}
+
+                        {appointment.status === "confirmed" && (
                           <div className="pt-2">
-                            <button 
+                            <button
                               onClick={() => handleOpenChat(appointment)}
                               className="w-full bg-zinc-800/70 hover:bg-zinc-800 text-zinc-300 hover:text-white border-zinc-700 hover:border-emerald-600 transition-all duration-300 rounded-xl h-9 px-3 inline-flex items-center justify-center text-sm"
                             >
@@ -348,10 +415,20 @@ export default function PatientDashboard({ doctors }) {
                     <div className="p-4 bg-zinc-800/50 rounded-2xl w-fit mx-auto mb-6">
                       <User className="h-16 w-16 text-zinc-500 mx-auto" />
                     </div>
-                    <h3 className="text-xl font-semibold text-zinc-200 mb-2">No Appointments Yet</h3>
-                    <p className="text-zinc-400 mb-8">Book your first appointment with a doctor</p>
-                    <button 
-                      onClick={() => document.querySelector('[data-radix-collection-item][value="find-doctors"]').click()}
+                    <h3 className="text-xl font-semibold text-zinc-200 mb-2">
+                      No Appointments Yet
+                    </h3>
+                    <p className="text-zinc-400 mb-8">
+                      Book your first appointment with a doctor
+                    </p>
+                    <button
+                      onClick={() =>
+                        document
+                          .querySelector(
+                            '[data-radix-collection-item][value="find-doctors"]'
+                          )
+                          .click()
+                      }
                       className="bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 rounded-xl px-6 py-2.5 inline-flex items-center justify-center"
                     >
                       <Calendar className="h-4 w-4 mr-2" />
