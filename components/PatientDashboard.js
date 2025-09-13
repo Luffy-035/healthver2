@@ -132,7 +132,6 @@ export default function PatientDashboard({ doctors }) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              {/* ✨ NEW: Health Score Calculator Button */}
               <Link
                 href="/health"
                 className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-zinc-200 bg-zinc-800/70 border border-zinc-700 rounded-xl hover:bg-zinc-800 hover:text-white transition-colors"
@@ -151,6 +150,17 @@ export default function PatientDashboard({ doctors }) {
                 />
                 <span>AI Assistant</span>
               </Link>
+              
+              <Link
+                href="https://eunice-unawaked-margret.ngrok-free.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-zinc-200 bg-zinc-800/70 border border-zinc-700 rounded-xl hover:bg-zinc-800 hover:text-white transition-colors"
+              >
+                <Brain className="h-4 w-4 mr-2" style={{ color: "#10D582" }} />
+                <span>Analyze Scans</span>
+              </Link>
+
               <UserButton afterSignOutUrl="/" />
             </div>
           </div>
@@ -215,89 +225,88 @@ export default function PatientDashboard({ doctors }) {
                   </div>
                 </div>
               </div>
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  {filteredDoctors.length > 0 ? (
-    filteredDoctors.map((doctor) => (
-      <div
-        key={doctor._id}
-        // 1. Make the entire card a vertical flex container
-        className="group backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 hover:border-emerald-500/40 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 hover:bg-zinc-900/50 rounded-2xl overflow-hidden relative flex flex-col"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div className="p-6 relative">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h2 className="text-xl font-semibold text-white group-hover:text-emerald-300 transition-colors duration-300">
-                {doctor.name}
-              </h2>
-              <p className="text-lg font-medium text-emerald-400 mt-1">
-                {doctor.specialization}
-              </p>
-            </div>
-            <span className="bg-zinc-800 text-zinc-300 border border-zinc-700 backdrop-blur-sm text-xs font-semibold px-2.5 py-0.5 rounded-full">
-              {doctor.category}
-            </span>
-          </div>
-        </div>
-        {/* 2. Make this content section grow to fill available space */}
-        <div className="p-6 pt-0 space-y-4 relative flex flex-col flex-grow">
-          <div className="flex items-center space-x-4 text-sm">
-            <div className="flex items-center space-x-2 text-zinc-400">
-              <div className="p-1.5 bg-emerald-500/10 rounded-lg">
-                <Star className="h-3 w-3 text-emerald-400" />
-              </div>
-              <span>{doctor.experience} years exp</span>
-              <span>₹{doctor.consultationFee}</span>
-            </div>
-          </div>
-
-          {doctor.qualifications && doctor.qualifications.length > 0 && (
-            <div>
-              <p className="text-sm font-medium text-zinc-300 mb-2">
-                Qualifications:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {doctor.qualifications
-                  .slice(0, 2)
-                  .map((qual, index) => (
-                    <span
-                      key={index}
-                      className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full"
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDoctors.length > 0 ? (
+                  filteredDoctors.map((doctor) => (
+                    <div
+                      key={doctor._id}
+                      className="group backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 hover:border-emerald-500/40 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-500 hover:bg-zinc-900/50 rounded-2xl overflow-hidden relative flex flex-col"
                     >
-                      {qual}
-                    </span>
-                  ))}
-                {doctor.qualifications.length > 2 && (
-                  <span className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full">
-                    +{doctor.qualifications.length - 2} more
-                  </span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <div className="p-6 relative">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <h2 className="text-xl font-semibold text-white group-hover:text-emerald-300 transition-colors duration-300">
+                              {doctor.name}
+                            </h2>
+                            <p className="text-lg font-medium text-emerald-400 mt-1">
+                              {doctor.specialization}
+                            </p>
+                          </div>
+                          <span className="bg-zinc-800 text-zinc-300 border border-zinc-700 backdrop-blur-sm text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            {doctor.category}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="p-6 pt-0 space-y-4 relative flex flex-col flex-grow">
+                        <div className="flex items-center space-x-4 text-sm">
+                          <div className="flex items-center space-x-2 text-zinc-400">
+                            <div className="p-1.5 bg-emerald-500/10 rounded-lg">
+                              <Star className="h-3 w-3 text-emerald-400" />
+                            </div>
+                            <span>{doctor.experience} years exp</span>
+                            <span>₹{doctor.consultationFee}</span>
+                          </div>
+                        </div>
+
+                        {doctor.qualifications &&
+                          doctor.qualifications.length > 0 && (
+                            <div>
+                              <p className="text-sm font-medium text-zinc-300 mb-2">
+                                Qualifications:
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {doctor.qualifications
+                                  .slice(0, 2)
+                                  .map((qual, index) => (
+                                    <span
+                                      key={index}
+                                      className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full"
+                                    >
+                                      {qual}
+                                    </span>
+                                  ))}
+                                {doctor.qualifications.length > 2 && (
+                                  <span className="text-xs bg-zinc-800 text-zinc-300 border-zinc-700 font-semibold px-2.5 py-0.5 rounded-full">
+                                    +{doctor.qualifications.length - 2} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                        <button
+                          className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02] rounded-xl py-3 font-medium text-lg inline-flex items-center justify-center mt-auto"
+                          onClick={() => handleBookAppointment(doctor)}
+                        >
+                          <Calendar className="h-5 w-5 mr-2" />
+                          Book Appointment
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full">
+                    <div className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
+                      <div className="text-center p-6 py-16">
+                        <p className="text-zinc-400">
+                          No doctors found for this category.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
-            </div>
-          )}
-
-          <button
-            // 3. Add 'mt-auto' to push the button to the bottom
-            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-[1.02] rounded-xl py-3 font-medium text-lg inline-flex items-center justify-center mt-auto"
-            onClick={() => handleBookAppointment(doctor)}
-          >
-            <Calendar className="h-5 w-5 mr-2" />
-            Book Appointment
-          </button>
-        </div>
-      </div>
-    ))
-  ) : (
-    // ... rest of your code
-    <div className="col-span-full">
-      <div className="backdrop-blur-xl bg-zinc-900/30 border border-zinc-800/60 shadow-2xl rounded-2xl">
-        <div className="text-center p-6 py-16">
-          {/* ... No doctors found content ... */}
-        </div>
-      </div>
-    </div>
-  )}
-</div>
             </TabsContent>
 
             <TabsContent value="my-appointments" className="space-y-8">
