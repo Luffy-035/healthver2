@@ -99,7 +99,6 @@ export default function PDFUploaderModal({ isOpen, onClose }) {
 
   const handleDownload = (downloadUrl, filename) => {
     if (!downloadUrl) {
-      alert("No download link available");
       return;
     }
 

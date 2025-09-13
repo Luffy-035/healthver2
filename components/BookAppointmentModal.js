@@ -116,9 +116,7 @@ function BookAppointmentModal({ doctor, isOpen, onClose, onViewAppointments }) {
             }
           } catch (error) {
             console.error("Payment verification error:", error);
-            alert(
-              `Payment verification failed: ${error.message}. Please contact support with payment ID: ${response.razorpay_payment_id}`
-            );
+            
           } finally {
             setLoading(false);
           }
@@ -141,7 +139,6 @@ function BookAppointmentModal({ doctor, isOpen, onClose, onViewAppointments }) {
       razorpay.open();
     } catch (error) {
       console.error("Payment initiation failed:", error);
-      alert("Failed to initiate payment: " + error.message);
       setLoading(false);
     }
   }, [selectedDate, selectedSlot, doctor._id, doctor.name, reason]);

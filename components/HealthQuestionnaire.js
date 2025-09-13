@@ -63,7 +63,6 @@ export default function HealthQuestionnaire({ isOpen, onClose, onComplete, previ
             await onComplete(responses);
         } catch (error) {
             console.error("Error submitting questionnaire:", error);
-            alert("Failed to submit questionnaire: " + error.message);
         } finally {
             setLoading(false);
         }

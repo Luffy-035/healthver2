@@ -85,7 +85,6 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
       setMessages(existingMessages);
     } catch (error) {
       console.error("Error initializing chat:", error);
-      alert("Failed to load chat: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -120,7 +119,6 @@ export default function ChatModal({ appointment, isOpen, onClose }) {
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      alert("Failed to send message: " + error.message);
     } finally {
       setSending(false);
     }

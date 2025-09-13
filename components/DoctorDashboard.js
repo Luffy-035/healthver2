@@ -64,7 +64,6 @@ export default function DoctorDashboard({ doctor }) {
       await fetchAppointments();
     } catch (error) {
       console.error("Error updating appointment:", error);
-      alert("Failed to update appointment");
     } finally {
       setUpdatingAppointment(null);
     }
