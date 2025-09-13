@@ -11,7 +11,14 @@ export default function ScannerPage() {
     const url = process.env.NEXT_PUBLIC_SCANNER_URL;
 
     if (url) {
-      setScannerUrl(url);
+      // Add ngrok-skip-browser-warning parameter if using ngrok
+      const parsedUrl = new URL(url);
+      if (parsedUrl.hostname.includes("ngrok")) {
+        parsedUrl.searchParams.set("ngrok-skip-browser-warning", "true");
+        setScannerUrl(parsedUrl.toString());
+      } else {
+        setScannerUrl(url);
+      }
     } else {
       setError("Scanner URL not configured");
     }

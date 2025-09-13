@@ -47,7 +47,7 @@ const nextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://browser.sentry-cdn.com https://lumberjack.razorpay.com https://js.stripe.com https://*.clerk.accounts.dev https://clerk.com https://*.clerk.com",
               "worker-src 'self' blob:",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com https://assets.ngrok.com",
+              "font-src 'self' https://fonts.gstatic.com https://assets.ngrok.com https://cdn.ngrok.com",
               "img-src 'self' data: https: blob:",
               "connect-src 'self' https: wss: https://lumberjack.razorpay.com https://api.razorpay.com https://clerk.com https://*.clerk.accounts.dev https://*.clerk.com",
               "frame-src 'self' https://checkout.razorpay.com https://api.razorpay.com https://js.stripe.com https://*.ngrok-free.dev",
@@ -56,6 +56,16 @@ const nextConfig = {
               "form-action 'self'",
               "upgrade-insecure-requests",
             ].join("; "),
+          },
+        ],
+      },
+      {
+        // Suppress ngrok warning for external iframe sources
+        source: "/scanner",
+        headers: [
+          {
+            key: "ngrok-skip-browser-warning",
+            value: "true",
           },
         ],
       },
